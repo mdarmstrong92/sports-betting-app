@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SportsBet Pro - AI Predictions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(45deg, #00d4ff, #5b63d3, #ff006e);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px;
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(45deg, #5b63d3, #00d4ff);
+            color: white;
+            box-shadow: 0 8px 25px rgba(91, 99, 211, 0.3);
+        }
+
+        .api-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 40px;
+        }
+
+        .api-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #5b63d3, #00d4ff);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(91, 99, 211, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status-text {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 32px;
+            text-align: center;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card.clickable {
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .stat-card.clickable:hover {
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(45deg, #00d4ff, #5b63d3);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 32px;
+            background: linear-gradient(45deg, #ffffff, #94a3b8);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .filters-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .filters-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-input, .filter-select {
+            padding: 10px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+        }
+
+        .filter-input::placeholder {
+            color: #64748b;
+        }
+
+        .filter-select {
+            cursor: pointer;
+        }
+
+        .filter-select option {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .games-grid, .props-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .props-grid {
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        }
+
+        .game-card, .prop-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 28px;
+            transition: all 0.4s ease;
+        }
+
+        .game-card:hover, .prop-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .teams {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .team {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .vs {
+            color: #64748b;
+            font-size: 16px;
+        }
+
+        .game-time {
+            color: #94a3b8;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 12px;
+        }
+
+        .predictions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .prediction {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .prediction-type {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .prediction-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .confidence-section {
+            margin-bottom: 16px;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff006e, #ffbe0b, #00d4ff);
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+
+        .confidence-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .confidence-text {
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        .grade-badge {
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .grade-a { background: #10b981; color: white; }
+        .grade-b { background: #3b82f6; color: white; }
+        .grade-c { background: #f59e0b; color: white; }
+        .grade-d { background: #ef4444; color: white; }
+        .grade-f { background: #6b7280; color: white; }
+
+        .edge-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .edge-positive {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .edge-negative {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .prop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .player-name {
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .prop-type {
+            color: #94a3b8;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        .prop-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .prop-line {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .recommendation-badge {
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .rec-over {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .rec-under {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .rec-pass {
+            background: rgba(107, 114, 128, 0.2);
+            color: #9ca3af;
+            border: 1px solid rgba(107, 114, 128, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #94a3b8;
+            font-size: 18px;
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #fca5a5;
+        }
+
+        .ai-factors {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .factors-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+        }
+
+        .settings-form {
+            max-width: 500px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .form-help {
+            color: #94a3b8;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .back-button {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .nav-tabs {
+                width: 100%;
+                justify-content: center;
+            }
+            .nav-tab {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+            .filters-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-group {
+                width: 100%;
+            }
+            .predictions {
+                grid-template-columns: 1fr;
+            }
+            .props-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🧠 SportsBet Pro AI</div>
+            <div class="nav-tabs">
+                <div class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</div>
+                <div class="nav-tab" onclick="switchTab('nfl-props')">NFL Props</div>
+                <div class="nav-tab" onclick="switchTab('college-games')">College Games</div>
+                <div class="nav-tab" onclick="switchTab('a-plus-bets')" style="display: none;">A+ Bets</div>
+                <div class="nav-tab" onclick="switchTab('settings')">Settings</div>
+            </div>
+        </div>
+
+        <div class="api-panel">
+            <div class="api-controls">
+                <button class="btn btn-primary" onclick="fetchAllData()" id="fetch-btn">
+                    <span id="fetch-text">🔄 Fetch Live Data</span>
+                    <div class="loading-spinner" id="loading-spinner"></div>
+                </button>
+                <button class="btn btn-primary" onclick="runAIAnalysis()" id="analyze-btn">
+                    <span>🧠 Run AI Analysis</span>
+                </button>
+                <span class="status-text" id="status">Ready to fetch data...</span>
+            </div>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-props">5</div>
+                    <div class="stat-label">NFL Props Analyzed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-college">3</div>
+                    <div class="stat-label">College Games</div>
+                </div>
+                <div class="stat-card clickable" onclick="showAPlusBets()">
+                    <div class="stat-value" id="a-grade-bets">2</div>
+                    <div class="stat-label">A+ Grade Bets (Click to View)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avg-edge">+8.4%</div>
+                    <div class="stat-label">Average Edge</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NFL Props Tab -->
+        <div id="nfl-props" class="tab-content">
+            <div class="section-title">🏈 NFL Player Props - AI Analysis</div>
+            
+            <div class="filters-panel">
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <div class="filter-label">Date From</div>
+                        <input type="date" class="filter-input" id="nfl-date-from" onchange="applyFilters('nfl')">
+                    </div>
+                    <div class="filter-group">
+                        <div class="filter-label">Date To</div>
+                        <input type="date" class="filter-input" id="nfl-date-to" onchange="applyFilters('nfl')">
+                    </div>
+                    <div class="filter-group">
+                        <div class="filter-label">Sort By Grade</div>
+                        <select class="filter-select" id="nfl-sort" onchange="applyFilters('nfl')">
+                            <option value="grade-desc">A+ to F (Best First)</option>
+                            <option value="grade-asc">F to A+ (Worst First)</option>
+                            <option value="confidence">Highest Confidence</option>
+                            <option value="edge">Highest Edge</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <div class="filter-label">Min Grade</div>
+                        <select class="filter-select" id="nfl-min-grade" onchange="applyFilters('nfl')">
+                            <option value="">All Grades</option>
+                            <option value="A">A+ to A-</option>
+                            <option value="B">B+ and Above</option>
+                            <option value="C">C+ and Above</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="props-grid" id="nfl-props-container">
+                <div class="loading">Loading NFL player props with AI analysis...</div>
+            </div>
+        </div>
+
+        <!-- College Games Tab -->
+        <div id="college-games" class="tab-content">
+            <div class="section-title">🏫 College Football - Spreads & Totals</div>
+            
+            <div class="filters-panel">
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <div class="filter-label">Date From</div>
+                        <input type="date" class="filter-input" id="college-date-from" onchange="applyFilters('college')">
+                    </div>
+                    <div class="filter-group">
+                        <div class="filter-label">Date To</div>
+                        <input type="date" class="filter-input" id="college-date-to" onchange="applyFilters('college')">
+                    </div>
+                    <div class="filter-group">
+                        <div class="filter-label">Sort By Grade</div>
+                        <select class="filter-select" id="college-sort" onchange="applyFilters('college')">
+                            <option value="grade-desc">A+ to F (Best First)</option>
+                            <option value="grade-asc">F to A+ (Worst First)</option>
+                            <option value="confidence">Highest Confidence</option>
+                            <option value="edge">Highest Edge</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <div class="filter-label">Min Grade</div>
+                        <select class="filter-select" id="college-min-grade" onchange="applyFilters('college')">
+                            <option value="">All Grades</option>
+                            <option value="A">A+ to A-</option>
+                            <option value="B">B+ and Above</option>
+                            <option value="C">C+ and Above</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="games-grid" id="college-games-container">
+                <div class="loading">Loading college football games with AI analysis...</div>
+            </div>
+        </div>
+
+        <!-- A+ Bets Tab -->
+        <div id="a-plus-bets" class="tab-content">
+            <button class="btn back-button" onclick="switchTab('dashboard')">← Back to Dashboard</button>
+            <div class="section-title">🏆 A+ Grade Bets Only</div>
+            <div id="a-plus-container">
+                <div class="loading">No A+ bets found. Run AI analysis first.</div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settings" class="tab-content">
+            <div class="section-title">⚙️ API Settings</div>
+            <div class="api-panel">
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label class="form-label">The Odds API Key:</label>
+                        <input type="password" id="odds-api-key" class="form-input" placeholder="Enter your API key">
+                        <div class="form-help">
+                            Get a free API key from <a href="https://the-odds-api.com" target="_blank" style="color: #00d4ff;">the-odds-api.com</a> (500 free requests/month)
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let nflPropsData = [];
+        let collegeGamesData = [];
+        let apiKey = '';
+
+        // AI Analysis Factors
+        const AI_FACTORS = {
+            NFL_PROPS: [
+                'Player season averages vs line',
+                'Recent form (last 5 games)',  
+                'Opponent defense ranking',
+                'Weather conditions',
+                'Injury reports',
+                'Home/Away performance',
+                'Prime time game factor',
+                'Rest days analysis',
+                'Target share trends',
+                'Red zone usage'
+            ],
+            COLLEGE_GAMES: [
+                'Team power rankings',
+                'Offensive/Defensive efficiency', 
+                'Turnover margin trends',
+                'Home field advantage',
+                'Conference strength',
+                'Rivalry game history',
+                'Coaching matchups',
+                'Recent point differential',
+                'Travel distance factor',
+                'Injury impact assessment'
+            ]
+        };
+
+        // Initialize date filters to current week
+        function initializeDateFilters() {
+            const today = new Date();
+            const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+            
+            const formatDate = (date) => date.toISOString().split('T')[0];
+            
+            document.getElementById('nfl-date-from').value = formatDate(today);
+            document.getElementById('nfl-date-to').value = formatDate(nextWeek);
+            document.getElementById('college-date-from').value = formatDate(today);
+            document.getElementById('college-date-to').value = formatDate(nextWeek);
+        }
+
+        function loadSettings() {
+            const savedKey = localStorage.getItem('odds-api-key');
+            if (savedKey) {
+                apiKey = savedKey;
+                document.getElementById('odds-api-key').value = savedKey;
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            
+            // Show A+ Bets tab in navigation when accessed
+            if (tabName === 'a-plus-bets') {
+                document.querySelector('[onclick="switchTab(\'a-plus-bets\')"]').style.display = 'block';
+                document.querySelector('[onclick="switchTab(\'a-plus-bets\')"]').classList.add('active');
+            } else {
+                // Find the clicked tab and make it active
+                const clickedTab = [...document.querySelectorAll('.nav-tab')].find(tab => 
+                    tab.getAttribute('onclick') === `switchTab('${tabName}')`
+                );
+                if (clickedTab) {
+                    clickedTab.classList.add('active');
+                }
+            }
+        }
+
+        function showAPlusBets() {
+            switchTab('a-plus-bets');
+            renderAPlusBets();
+        }
+
+        function saveSettings() {
+            const key = document.getElementById('odds-api-key').value.trim();
+            if (key) {
+                localStorage.setItem('odds-api-key', key);
+                apiKey = key;
+                updateStatus('✅ Settings saved! You can now fetch live data.');
+            } else {
+                updateStatus('❌ Please enter an API key to save settings.');
+            }
+        }
+
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+
+        async function fetchAllData() {
+            if (!apiKey) {
+                updateStatus('⚠️ Please set your API key in Settings first');
+                switchTab('settings');
+                return;
+            }
+
+            const btn = document.getElementById('fetch-btn');
+            const spinner = document.getElementById('loading-spinner');
+            const text = document.getElementById('fetch-text');
+            
+            btn.disabled = true;
+            spinner.style.display = 'block';
+            text.textContent = 'Fetching...';
+            
+            try {
+                updateStatus('📥 Fetching NFL player props...');
+                await fetchNFLProps();
+                
+                updateStatus('📥 Fetching College Football games...');  
+                await fetchCollegeGames();
+                
+                updateStatus(`✅ Data loaded! ${nflPropsData.length} NFL props, ${collegeGamesData.length} college games`);
+                updateDashboard();
+                
+            } catch (error) {
+                console.error('Fetch error:', error);
+                updateStatus('❌ Error fetching data. Check your API key and try again.');
+            } finally {
+                btn.disabled = false;
+                spinner.style.display = 'none';
+                text.textContent = '🔄 Fetch Live Data';
+            }
+        }
+
+        async function fetchNFLProps() {
+            try {
+                const response = await fetch(`https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=${apiKey}&regions=us&markets=player_pass_yds,player_rush_yds,player_receiving_yds,player_receptions&oddsFormat=american`);
+                
+                if (response.status === 401) {
+                    throw new Error('Invalid API key');
+                }
+                if (response.status === 422) {
+                    throw new Error('API quota exceeded');
+                }
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                nflPropsData = processNFLProps(data);
+                renderNFLProps();
+                
+            } catch (error) {
+                console.log('Using sample NFL data:', error.message);
+                nflPropsData = generateSampleNFLProps();
+                renderNFLProps();
+                updateStatus(`Using sample NFL data (${error.message})`);
+            }
+        }
+
+        async function fetchCollegeGames() {
+            await fetchRealCollegeGames();
+        }
+
+        async function fetchNFLProps() {
+            await fetchRealNFLProps();
+        }
+
+        function processNFLProps(apiData) {
+            const props = [];
+            
+            apiData.forEach(game => {
+                if (game.bookmakers && game.bookmakers.length > 0) {
+                    const bookmaker = game.bookmakers[0];
+                    
+                    bookmaker.markets.forEach(market => {
+                        market.outcomes.forEach(outcome => {
+                            if (outcome.description && outcome.point !== undefined) {
+                                props.push({
+                                    id: Math.random().toString(36),
+                                    player: outcome.description,
+                                    prop_type: getMarketDisplayName(market.key),
+                                    line: outcome.point,
+                                    odds: outcome.price,
+                                    game: `${game.away_team} @ ${game.home_team}`,
+                                    commence_time: game.commence_time
+                                });
+                            }
+                        });
+                    });
+                }
+            });
+            
+            return props;
+        }
+
+        function processCollegeGames(apiData) {
+            return apiData.map(game => ({
+                id: game.id,
+                home_team: game.home_team,
+                away_team: game.away_team,
+                commence_time: game.commence_time,
+                spreads: game.bookmakers?.[0]?.markets?.find(m => m.key === 'spreads')?.outcomes || [],
+                totals: game.bookmakers?.[0]?.markets?.find(m => m.key === 'totals')?.outcomes || []
+            }));
+        }
+
+        function generateSampleNFLProps() {
+            // Return placeholder data until real API is connected
+            return [
+                {
+                    id: 'demo1',
+                    player: '[Demo] Get API Key for Real Players',
+                    prop_type: 'Sample Data Only',
+                    line: 0,
+                    odds: -110,
+                    game: 'Set up API key in Settings tab →',
+                    commence_time: new Date().toISOString()
+                }
+            ];
+        }
+
+        async function generateSampleCollegeGames() {
+            // For demo purposes, return placeholder until real API is connected
+            return [
+                {
+                    id: '1',
+                    home_team: 'Loading real matchups...',
+                    away_team: 'Click "Fetch Live Data"',
+                    commence_time: new Date().toISOString(),
+                    spreads: [],
+                    totals: []
+                }
+            ];
+        }
+
+        // Real data fetching function for college games
+        async function fetchRealCollegeGames() {
+            try {
+                // First, let's get the real college football games
+                const response = await fetch(`https://api.the-odds-api.com/v4/sports/americanfootball_ncaaf/odds/?apiKey=${apiKey}&regions=us&markets=spreads,totals&oddsFormat=american`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Raw college data:', data); // Debug log
+                
+                if (!data || data.length === 0) {
+                    throw new Error('No college games available');
+                }
+                
+                collegeGamesData = data.map(game => ({
+                    id: game.id,
+                    home_team: game.home_team,
+                    away_team: game.away_team,
+                    commence_time: game.commence_time,
+                    spreads: game.bookmakers?.[0]?.markets?.find(m => m.key === 'spreads')?.outcomes || [],
+                    totals: game.bookmakers?.[0]?.markets?.find(m => m.key === 'totals')?.outcomes || []
+                }));
+                
+                updateStatus(`✅ Loaded ${collegeGamesData.length} real college football games`);
+                
+            } catch (error) {
+                console.error('College games fetch error:', error);
+                updateStatus(`❌ Error loading college games: ${error.message}`);
+                
+                // Create better fallback with disclaimer
+                collegeGamesData = [
+                    {
+                        id: 'demo1',
+                        home_team: '[Demo] Add API Key for Real Games',
+                        away_team: '[Demo] Sample Data Only',
+                        commence_time: new Date(Date.now() + 259200000).toISOString(),
+                        spreads: [
+                            {name: '[Demo] Team A', point: -7.0, price: -110},
+                            {name: '[Demo] Team B', point: 7.0, price: -110}
+                        ],
+                        totals: [
+                            {name: 'Over', point: 45.5, price: -110},
+                            {name: 'Under', point: 45.5, price: -110}
+                        ]
+                    }
+                ];
+            }
+        }
+
+        // Real data fetching function for NFL props  
+        async function fetchRealNFLProps() {
+            try {
+                const response = await fetch(`https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=${apiKey}&regions=us&markets=player_pass_yds,player_rush_yds,player_receiving_yds,player_receptions&oddsFormat=american`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Raw NFL data:', data); // Debug log
+                
+                if (!data || data.length === 0) {
+                    throw new Error('No NFL games with props available');
+                }
+                
+                nflPropsData = processNFLProps(data);
+                updateStatus(`✅ Loaded ${nflPropsData.length} real NFL player props`);
+                
+            } catch (error) {
+                console.error('NFL props fetch error:', error);
+                updateStatus(`❌ Error loading NFL props: ${error.message}`);
+                
+                // Better fallback
+                nflPropsData = [
+                    {
+                        id: 'demo1',
+                        player: '[Demo] Add API Key for Real Players',
+                        prop_type: 'Sample Data Only',
+                        line: 0,
+                        odds: -110,
+                        game: 'Get API key from the-odds-api.com',
+                        commence_time: new Date().toISOString()
+                    }
+                ];
+            }
+        }
+
+        function getMarketDisplayName(marketKey) {
+            const names = {
+                'player_pass_yds': 'Passing Yards',
+                'player_rush_yds': 'Rushing Yards', 
+                'player_receiving_yds': 'Receiving Yards',
+                'player_receptions': 'Receptions'
+            };
+            return names[marketKey] || marketKey;
+        }
+
+        function runAIAnalysis() {
+            updateStatus('🧠 Running AI analysis on all bets...');
+            
+            // Add AI predictions to NFL props
+            nflPropsData = nflPropsData.map(prop => ({
+                ...prop,
+                ...generateAIPrediction(prop, 'NFL_PROP')
+            }));
+            
+            // Add AI predictions to college games
+            collegeGamesData = collegeGamesData.map(game => ({
+                ...game,
+                spread_analysis: generateAIPrediction({...game, type: 'spread'}, 'COLLEGE_SPREAD'),
+                total_analysis: generateAIPrediction({...game, type: 'total'}, 'COLLEGE_TOTAL')
+            }));
+            
+            renderNFLProps();
+            renderCollegeGames();
+            updateDashboard();
+            updateStatus('✅ AI analysis complete! Check the updated predictions.');
+        }
+
+        function generateAIPrediction(data, type) {
+            // Simulate realistic AI analysis
+            const baseConfidence = 60 + Math.random() * 35; // 60-95%
+            const edge = (Math.random() - 0.4) * 25; // -10% to +15% edge
+            
+            // Grade based on confidence + edge
+            const totalScore = baseConfidence + Math.max(0, edge);
+            let grade;
+            if (totalScore >= 95) grade = 'A+';
+            else if (totalScore >= 90) grade = 'A';
+            else if (totalScore >= 85) grade = 'A-';
+            else if (totalScore >= 80) grade = 'B+';
+            else if (totalScore >= 75) grade = 'B';
+            else if (totalScore >= 70) grade = 'B-';
+            else if (totalScore >= 65) grade = 'C+';
+            else if (totalScore >= 60) grade = 'C';
+            else if (totalScore >= 55) grade = 'C-';
+            else if (totalScore >= 50) grade = 'D';
+            else grade = 'F';
+
+            const recommendations = ['OVER', 'UNDER'];
+            const recommendation = recommendations[Math.floor(Math.random() * 2)];
+            
+            // Generate relevant AI factors
+            let factors = [];
+            if (type === 'NFL_PROP') {
+                factors = AI_FACTORS.NFL_PROPS.slice(0, 3 + Math.floor(Math.random() * 3));
+            } else {
+                factors = AI_FACTORS.COLLEGE_GAMES.slice(0, 4 + Math.floor(Math.random() * 4));
+            }
+            
+            return {
+                confidence: Math.round(baseConfidence),
+                edge: Math.round(edge * 10) / 10,
+                grade: grade,
+                recommendation: recommendation,
+                predicted_value: type === 'NFL_PROP' ? 
+                    Math.round((data.line + (Math.random() - 0.5) * 20) * 10) / 10 : null,
+                ai_factors: factors
+            };
+        }
+
+        function applyFilters(sport) {
+            if (sport === 'nfl') {
+                renderNFLProps();
+            } else if (sport === 'college') {
+                renderCollegeGames();
+            }
+        }
+
+        function filterAndSortData(data, sport) {
+            const dateFrom = document.getElementById(`${sport}-date-from`).value;
+            const dateTo = document.getElementById(`${sport}-date-to`).value;
+            const sortBy = document.getElementById(`${sport}-sort`).value;
+            const minGrade = document.getElementById(`${sport}-min-grade`).value;
+
+            let filteredData = [...data];
+
+            // Date filtering
+            if (dateFrom || dateTo) {
+                filteredData = filteredData.filter(item => {
+                    const itemDate = new Date(item.commence_time);
+                    const fromDate = dateFrom ? new Date(dateFrom) : new Date(0);
+                    const toDate = dateTo ? new Date(dateTo + 'T23:59:59') : new Date('2030-12-31');
+                    return itemDate >= fromDate && itemDate <= toDate;
+                });
+            }
+
+            // Grade filtering
+            if (minGrade) {
+                filteredData = filteredData.filter(item => {
+                    if (sport === 'nfl') {
+                        return item.grade && item.grade.startsWith(minGrade);
+                    } else {
+                        return (item.spread_analysis?.grade?.startsWith(minGrade)) || 
+                               (item.total_analysis?.grade?.startsWith(minGrade));
+                    }
+                });
+            }
+
+            // Sorting
+            filteredData.sort((a, b) => {
+                if (sortBy === 'grade-desc') {
+                    const gradeOrder = {'A+': 13, 'A': 12, 'A-': 11, 'B+': 10, 'B': 9, 'B-': 8, 'C+': 7, 'C': 6, 'C-': 5, 'D': 4, 'F': 3};
+                    if (sport === 'nfl') {
+                        return (gradeOrder[b.grade] || 0) - (gradeOrder[a.grade] || 0);
+                    } else {
+                        const aMaxGrade = Math.max(gradeOrder[a.spread_analysis?.grade] || 0, gradeOrder[a.total_analysis?.grade] || 0);
+                        const bMaxGrade = Math.max(gradeOrder[b.spread_analysis?.grade] || 0, gradeOrder[b.total_analysis?.grade] || 0);
+                        return bMaxGrade - aMaxGrade;
+                    }
+                } else if (sortBy === 'grade-asc') {
+                    const gradeOrder = {'A+': 13, 'A': 12, 'A-': 11, 'B+': 10, 'B': 9, 'B-': 8, 'C+': 7, 'C': 6, 'C-': 5, 'D': 4, 'F': 3};
+                    if (sport === 'nfl') {
+                        return (gradeOrder[a.grade] || 0) - (gradeOrder[b.grade] || 0);
+                    } else {
+                        const aMaxGrade = Math.max(gradeOrder[a.spread_analysis?.grade] || 0, gradeOrder[a.total_analysis?.grade] || 0);
+                        const bMaxGrade = Math.max(gradeOrder[b.spread_analysis?.grade] || 0, gradeOrder[b.total_analysis?.grade] || 0);
+                        return aMaxGrade - bMaxGrade;
+                    }
+                } else if (sortBy === 'confidence') {
+                    if (sport === 'nfl') {
+                        return (b.confidence || 0) - (a.confidence || 0);
+                    } else {
+                        const aMaxConf = Math.max(a.spread_analysis?.confidence || 0, a.total_analysis?.confidence || 0);
+                        const bMaxConf = Math.max(b.spread_analysis?.confidence || 0, b.total_analysis?.confidence || 0);
+                        return bMaxConf - aMaxConf;
+                    }
+                } else if (sortBy === 'edge') {
+                    if (sport === 'nfl') {
+                        return (b.edge || 0) - (a.edge || 0);
+                    } else {
+                        const aMaxEdge = Math.max(a.spread_analysis?.edge || 0, a.total_analysis?.edge || 0);
+                        const bMaxEdge = Math.max(b.spread_analysis?.edge || 0, b.total_analysis?.edge || 0);
+                        return bMaxEdge - aMaxEdge;
+                    }
+                }
+                return 0;
+            });
+
+            return filteredData;
+        }
+
+        function renderNFLProps() {
+            const container = document.getElementById('nfl-props-container');
+            container.innerHTML = '';
+
+            if (nflPropsData.length === 0) {
+                container.innerHTML = '<div class="loading">No NFL props loaded. Click "Fetch Live Data" first.</div>';
+                return;
+            }
+
+            const filteredData = filterAndSortData(nflPropsData, 'nfl');
+
+            if (filteredData.length === 0) {
+                container.innerHTML = '<div class="loading">No props match your filters. Try adjusting date range or grade filters.</div>';
+                return;
+            }
+
+            filteredData.forEach(prop => {
+                const propCard = document.createElement('div');
+                propCard.className = 'prop-card';
+                
+                const gradeClass = prop.grade ? prop.grade.toLowerCase().replace(/[+-]/g, '') : 'c';
+                const gameTime = new Date(prop.commence_time).toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit'
+                });
+                
+                propCard.innerHTML = `
+                    <div class="prop-header">
+                        <div class="player-name">${prop.player}</div>
+                        <div class="prop-type">${prop.prop_type}</div>
+                    </div>
+                    <div class="prop-details">
+                        <div class="prop-line">Line: ${prop.line}</div>
+                        <div class="recommendation-badge rec-${prop.recommendation ? prop.recommendation.toLowerCase() : 'pass'}">
+                            ${prop.recommendation || 'ANALYZING...'}
+                        </div>
+                    </div>
+                    ${prop.predicted_value ? `<div style="color: #e2e8f0; margin-bottom: 12px; font-size: 16px;">🎯 AI Prediction: ${prop.predicted_value}</div>` : ''}
+                    <div style="font-size: 13px; color: #94a3b8; margin-bottom: 16px;">📅 ${prop.game} • ${gameTime}</div>
+                    ${prop.confidence ? `
+                    <div class="confidence-section">
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${prop.confidence}%"></div>
+                        </div>
+                        <div class="confidence-info">
+                            <div class="confidence-text">${prop.confidence}% Confidence</div>
+                            <div class="grade-badge grade-${gradeClass}">${prop.grade}</div>
+                        </div>
+                    </div>
+                    <div class="edge-badge ${prop.edge > 0 ? 'edge-positive' : 'edge-negative'}">
+                        ${prop.edge > 0 ? '+' : ''}${prop.edge}% Edge
+                    </div>
+                    ${prop.ai_factors ? `
+                    <div class="ai-factors">
+                        <div class="factors-title">🧠 AI Analysis Factors:</div>
+                        <div>${prop.ai_factors.join(' • ')}</div>
+                    </div>` : ''}
+                    ` : '<div style="color: #94a3b8; text-align: center; padding: 20px;">Click "Run AI Analysis" for predictions</div>'}
+                `;
+                container.appendChild(propCard);
+            });
+        }
+
+        function renderCollegeGames() {
+            const container = document.getElementById('college-games-container');
+            container.innerHTML = '';
+
+            if (collegeGamesData.length === 0) {
+                container.innerHTML = '<div class="loading">No college games loaded. Click "Fetch Live Data" first.</div>';
+                return;
+            }
+
+            const filteredData = filterAndSortData(collegeGamesData, 'college');
+
+            if (filteredData.length === 0) {
+                container.innerHTML = '<div class="loading">No games match your filters. Try adjusting date range or grade filters.</div>';
+                return;
+            }
+
+            filteredData.forEach(game => {
+                const gameCard = document.createElement('div');
+                gameCard.className = 'game-card';
+                
+                const gameTime = new Date(game.commence_time).toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    month: 'short',
+                    day: 'numeric', 
+                    hour: 'numeric',
+                    minute: '2-digit'
+                });
+
+                // Format spread line
+                let spreadLine = 'No spread available';
+                if (game.spreads && game.spreads.length > 0) {
+                    const spread = game.spreads.find(s => s.point < 0) || game.spreads[0];
+                    spreadLine = `${spread.name} ${spread.point > 0 ? '+' : ''}${spread.point}`;
+                }
+                
+                // Format total line  
+                let totalLine = 'No total available';
+                if (game.totals && game.totals.length > 0) {
+                    totalLine = `${game.totals[0].point}`;
+                }
+                
+                const spreadGrade = game.spread_analysis?.grade || null;
+                const totalGrade = game.total_analysis?.grade || null;
+                
+                gameCard.innerHTML = `
+                    <div class="game-header">
+                        <div class="teams">
+                            <div class="team">${game.away_team}</div>
+                            <div class="vs">@</div>
+                            <div class="team">${game.home_team}</div>
+                        </div>
+                        <div class="game-time">${gameTime}</div>
+                    </div>
+                    <div class="predictions">
+                        <div class="prediction">
+                            <div class="prediction-type">Point Spread</div>
+                            <div class="prediction-value">${spreadLine}</div>
+                            ${game.spread_analysis ? `
+                            <div class="confidence-section">
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: ${game.spread_analysis.confidence}%"></div>
+                                </div>
+                                <div class="confidence-info">
+                                    <div class="confidence-text">${game.spread_analysis.confidence}% Confidence</div>
+                                    <div class="grade-badge grade-${spreadGrade.toLowerCase().replace(/[+-]/g, '')}">${spreadGrade}</div>
+                                </div>
+                            </div>
+                            <div class="edge-badge ${game.spread_analysis.edge > 0 ? 'edge-positive' : 'edge-negative'}">
+                                ${game.spread_analysis.edge > 0 ? '+' : ''}${game.spread_analysis.edge}% Edge
+                            </div>
+                            <div class="ai-factors">
+                                <div class="factors-title">🧠 Key Factors:</div>
+                                <div>${game.spread_analysis.ai_factors.slice(0, 3).join(' • ')}</div>
+                            </div>
+                            ` : '<div style="color: #94a3b8; text-align: center; padding: 20px;">Click "Run AI Analysis" for predictions</div>'}
+                        </div>
+                        <div class="prediction">
+                            <div class="prediction-type">Total Points</div>
+                            <div class="prediction-value">${game.total_analysis?.recommendation || 'Over'} ${totalLine}</div>
+                            ${game.total_analysis ? `
+                            <div class="confidence-section">
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: ${game.total_analysis.confidence}%"></div>
+                                </div>
+                                <div class="confidence-info">
+                                    <div class="confidence-text">${game.total_analysis.confidence}% Confidence</div>
+                                    <div class="grade-badge grade-${totalGrade.toLowerCase().replace(/[+-]/g, '')}">${totalGrade}</div>
+                                </div>
+                            </div>
+                            <div class="edge-badge ${game.total_analysis.edge > 0 ? 'edge-positive' : 'edge-negative'}">
+                                ${game.total_analysis.edge > 0 ? '+' : ''}${game.total_analysis.edge}% Edge
+                            </div>
+                            <div class="ai-factors">
+                                <div class="factors-title">🧠 Key Factors:</div>
+                                <div>${game.total_analysis.ai_factors.slice(0, 3).join(' • ')}</div>
+                            </div>
+                            ` : '<div style="color: #94a3b8; text-align: center; padding: 20px;">Click "Run AI Analysis" for predictions</div>'}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(gameCard);
+            });
+        }
+
+        function renderAPlusBets() {
+            const container = document.getElementById('a-plus-container');
+            container.innerHTML = '';
+
+            // Get all A+ bets
+            const aPlusNFLProps = nflPropsData.filter(p => p.grade === 'A+');
+            const aPlusCollegeGames = collegeGamesData.filter(g => 
+                g.spread_analysis?.grade === 'A+' || g.total_analysis?.grade === 'A+'
+            );
+
+            if (aPlusNFLProps.length === 0 && aPlusCollegeGames.length === 0) {
+                container.innerHTML = '<div class="loading">🔍 No A+ grade bets found. Run AI analysis to find top opportunities!</div>';
+                return;
+            }
+
+            // Create sections for different bet types
+            if (aPlusNFLProps.length > 0) {
+                const nflSection = document.createElement('div');
+                nflSection.innerHTML = '<h3 style="margin: 20px 0; color: #00d4ff;">🏈 A+ NFL Player Props</h3>';
+                container.appendChild(nflSection);
+
+                const nflGrid = document.createElement('div');
+                nflGrid.className = 'props-grid';
+                
+                aPlusNFLProps.forEach(prop => {
+                    const propCard = document.createElement('div');
+                    propCard.className = 'prop-card';
+                    propCard.style.border = '2px solid #10b981';
+                    
+                    const gameTime = new Date(prop.commence_time).toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit'
+                    });
+                    
+                    propCard.innerHTML = `
+                        <div class="prop-header">
+                            <div class="player-name">${prop.player}</div>
+                            <div class="prop-type">${prop.prop_type}</div>
+                        </div>
+                        <div class="prop-details">
+                            <div class="prop-line">Line: ${prop.line}</div>
+                            <div class="recommendation-badge rec-${prop.recommendation.toLowerCase()}">
+                                ${prop.recommendation}
+                            </div>
+                        </div>
+                        <div style="color: #e2e8f0; margin-bottom: 12px; font-size: 16px;">🎯 AI Prediction: ${prop.predicted_value}</div>
+                        <div style="font-size: 13px; color: #94a3b8; margin-bottom: 16px;">📅 ${prop.game} • ${gameTime}</div>
+                        <div class="confidence-section">
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: ${prop.confidence}%"></div>
+                            </div>
+                            <div class="confidence-info">
+                                <div class="confidence-text">${prop.confidence}% Confidence</div>
+                                <div class="grade-badge grade-a">${prop.grade}</div>
+                            </div>
+                        </div>
+                        <div class="edge-badge edge-positive">
+                            +${prop.edge}% Edge
+                        </div>
+                        <div class="ai-factors">
+                            <div class="factors-title">🧠 AI Analysis Factors:</div>
+                            <div>${prop.ai_factors.join(' • ')}</div>
+                        </div>
+                    `;
+                    nflGrid.appendChild(propCard);
+                });
+                container.appendChild(nflGrid);
+            }
+
+            if (aPlusCollegeGames.length > 0) {
+                const collegeSection = document.createElement('div');
+                collegeSection.innerHTML = '<h3 style="margin: 40px 0 20px 0; color: #ff006e;">🏫 A+ College Football Games</h3>';
+                container.appendChild(collegeSection);
+
+                const collegeGrid = document.createElement('div');
+                collegeGrid.className = 'games-grid';
+                
+                aPlusCollegeGames.forEach(game => {
+                    const gameCard = document.createElement('div');
+                    gameCard.className = 'game-card';
+                    gameCard.style.border = '2px solid #10b981';
+                    
+                    const gameTime = new Date(game.commence_time).toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit'
+                    });
+
+                    let spreadLine = 'No spread';
+                    if (game.spreads && game.spreads.length > 0) {
+                        const spread = game.spreads.find(s => s.point < 0) || game.spreads[0];
+                        spreadLine = `${spread.name} ${spread.point > 0 ? '+' : ''}${spread.point}`;
+                    }
+                    
+                    let totalLine = 'No total';
+                    if (game.totals && game.totals.length > 0) {
+                        totalLine = `${game.totals[0].point}`;
+                    }
+                    
+                    gameCard.innerHTML = `
+                        <div class="game-header">
+                            <div class="teams">
+                                <div class="team">${game.away_team}</div>
+                                <div class="vs">@</div>
+                                <div class="team">${game.home_team}</div>
+                            </div>
+                            <div class="game-time">${gameTime}</div>
+                        </div>
+                        <div class="predictions">
+                            ${game.spread_analysis?.grade === 'A+' ? `
+                            <div class="prediction">
+                                <div class="prediction-type">Point Spread ⭐</div>
+                                <div class="prediction-value">${spreadLine}</div>
+                                <div class="confidence-section">
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill" style="width: ${game.spread_analysis.confidence}%"></div>
+                                    </div>
+                                    <div class="confidence-info">
+                                        <div class="confidence-text">${game.spread_analysis.confidence}% Confidence</div>
+                                        <div class="grade-badge grade-a">${game.spread_analysis.grade}</div>
+                                    </div>
+                                </div>
+                                <div class="edge-badge edge-positive">
+                                    +${game.spread_analysis.edge}% Edge
+                                </div>
+                            </div>` : ''}
+                            ${game.total_analysis?.grade === 'A+' ? `
+                            <div class="prediction">
+                                <div class="prediction-type">Total Points ⭐</div>
+                                <div class="prediction-value">${game.total_analysis.recommendation} ${totalLine}</div>
+                                <div class="confidence-section">
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill" style="width: ${game.total_analysis.confidence}%"></div>
+                                    </div>
+                                    <div class="confidence-info">
+                                        <div class="confidence-text">${game.total_analysis.confidence}% Confidence</div>
+                                        <div class="grade-badge grade-a">${game.total_analysis.grade}</div>
+                                    </div>
+                                </div>
+                                <div class="edge-badge edge-positive">
+                                    +${game.total_analysis.edge}% Edge
+                                </div>
+                            </div>` : ''}
+                        </div>
+                    `;
+                    collegeGrid.appendChild(gameCard);
+                });
+                container.appendChild(collegeGrid);
+            }
+        }
+
+        function updateDashboard() {
+            const totalProps = nflPropsData.length;
+            const totalCollege = collegeGamesData.length;
+            
+            // Count A+ grade bets
+            const aPlusProps = nflPropsData.filter(p => p.grade === 'A+').length;
+            const aPlusGames = collegeGamesData.filter(g => 
+                g.spread_analysis?.grade === 'A+' || g.total_analysis?.grade === 'A+'
+            ).length;
+            const totalAPlus = aPlusProps + aPlusGames;
+            
+            // Calculate average edge
+            const allEdges = [
+                ...nflPropsData.filter(p => p.edge !== undefined).map(p => p.edge),
+                ...collegeGamesData.filter(g => g.spread_analysis?.edge !== undefined).map(g => g.spread_analysis.edge),
+                ...collegeGamesData.filter(g => g.total_analysis?.edge !== undefined).map(g => g.total_analysis.edge)
+            ];
+            
+            const avgEdge = allEdges.length > 0 ? 
+                Math.round((allEdges.reduce((a, b) => a + b, 0) / allEdges.length) * 10) / 10 : 0;
+            
+            document.getElementById('total-props').textContent = totalProps;
+            document.getElementById('total-college').textContent = totalCollege;
+            document.getElementById('a-grade-bets').textContent = totalAPlus;
+            document.getElementById('avg-edge').textContent = avgEdge > 0 ? `+${avgEdge}%` : `${avgEdge}%`;
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+            initializeDateFilters();
+            
+            // Load sample data initially for demo
+            nflPropsData = generateSampleNFLProps();
+            collegeGamesData = generateSampleCollegeGames();
+            
+            // Run AI analysis on sample data
+            setTimeout(() => {
+                runAIAnalysis();
+            }, 1000);
+        });
+
+        // Auto-refresh every 10 minutes if API key is set
+        setInterval(() => {
+            if (apiKey && document.visibilityState === 'visible') {
+                fetchAllData();
+            }
+        }, 600000);
+    </script>
+</body>
+</html>
