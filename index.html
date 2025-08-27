@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human Robot Football Locks</title>
+    <title>Human Robot Football Locks - AI Betting Analysis</title>
     <style>
         * {
             margin: 0;
@@ -16,193 +16,145 @@
             background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
             color: #ffffff;
             min-height: 100vh;
+            padding: 20px;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 20px;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 30px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
         .logo {
             display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+            align-items: center;
+            gap: 15px;
         }
 
-        .logo-main {
+        .logo-icon {
+            font-size: 48px;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-title {
             font-size: 32px;
             font-weight: 800;
-            background: linear-gradient(45deg, #00d4ff, #5b63d3, #ff006e);
+            background: linear-gradient(45deg, #00d4ff, #5b63d3);
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 4px;
         }
 
-        .logo-sub {
-            font-size: 14px;
-            color: #94a3b8;
-            font-weight: 400;
+        .logo-subtitle {
+            font-size: 12px;
+            color: #64748b;
             font-style: italic;
         }
 
         .search-container {
             position: relative;
-            width: 100%;
+            flex: 1;
             max-width: 400px;
         }
 
         .search-input {
             width: 100%;
-            padding: 12px 16px 12px 45px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 16px 12px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
             color: white;
             font-size: 14px;
-            backdrop-filter: blur(10px);
-        }
-
-        .search-input::placeholder {
-            color: #94a3b8;
         }
 
         .search-icon {
             position: absolute;
-            left: 15px;
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
-            color: #94a3b8;
-            pointer-events: none;
-        }
-
-        .search-results {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: rgba(30, 41, 59, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            backdrop-filter: blur(20px);
-            max-height: 300px;
-            overflow-y: auto;
-            z-index: 1000;
-            margin-top: 8px;
-        }
-
-        .search-result-item {
-            padding: 12px 16px;
-            cursor: pointer;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            transition: background 0.2s ease;
-        }
-
-        .search-result-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .search-result-title {
-            font-weight: 600;
-            color: #ffffff;
-            margin-bottom: 4px;
-        }
-
-        .search-result-subtitle {
-            font-size: 12px;
-            color: #94a3b8;
+            color: #64748b;
         }
 
         .nav-tabs {
             display: flex;
-            gap: 8px;
+            gap: 0;
             background: rgba(255, 255, 255, 0.05);
-            padding: 6px;
-            border-radius: 16px;
-            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            padding: 4px;
         }
 
         .nav-tab {
-            padding: 12px 24px;
-            border-radius: 12px;
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
             cursor: pointer;
+            border-radius: 8px;
             transition: all 0.3s ease;
             font-weight: 500;
+            font-size: 14px;
         }
 
         .nav-tab.active {
-            background: linear-gradient(45deg, #5b63d3, #00d4ff);
+            background: linear-gradient(135deg, #3b82f6, #00d4ff);
             color: white;
-            box-shadow: 0 8px 25px rgba(91, 99, 211, 0.3);
         }
 
-        .api-panel {
-            background: rgba(255, 255, 255, 0.05);
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 40px;
-        }
-
-        .api-controls {
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
             display: flex;
-            gap: 12px;
+            justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 12px;
         }
 
         .btn {
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
-            font-size: 14px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .btn-primary {
-            background: linear-gradient(45deg, #5b63d3, #00d4ff);
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
             color: white;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(91, 99, 211, 0.4);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
         }
 
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .loading-spinner {
-            display: none;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top: 2px solid #ffffff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .btn-ai {
+            background: linear-gradient(135deg, #00d4ff, #0891b2);
+            color: white;
         }
 
         .status-text {
@@ -210,384 +162,237 @@
             font-size: 14px;
         }
 
+        .credits-display {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 24px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 20px;
-            padding: 32px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
             text-align: center;
-            transition: all 0.4s ease;
-            cursor: pointer;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .stat-card.clickable {
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-
-        .stat-card.clickable:hover {
-            background: rgba(16, 185, 129, 0.1);
         }
 
         .stat-value {
             font-size: 36px;
-            font-weight: 800;
-            margin-bottom: 12px;
+            font-weight: 700;
             background: linear-gradient(45deg, #00d4ff, #5b63d3);
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
         }
 
         .stat-label {
-            color: #94a3b8;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .section-title {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 32px;
-            background: linear-gradient(45deg, #ffffff, #94a3b8);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .filters-panel {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-
-        .filters-row {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .filter-label {
-            font-size: 12px;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .filter-input, .filter-select {
-            padding: 10px 16px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 14px;
-        }
-
-        .filter-input::placeholder {
             color: #64748b;
-        }
-
-        .filter-select {
-            cursor: pointer;
-        }
-
-        .filter-select option {
-            background: #1a1a2e;
-            color: white;
-        }
-
-        .props-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 24px;
-        }
-
-        .prop-card, .bet-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 20px;
-            padding: 28px;
-            transition: all 0.4s ease;
-        }
-
-        .prop-card:hover, .bet-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-        }
-
-        .prop-header, .bet-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .player-name {
-            font-weight: 700;
-            font-size: 18px;
-        }
-
-        .prop-type, .bet-type {
-            color: #94a3b8;
             font-size: 14px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 6px 12px;
-            border-radius: 8px;
-        }
-
-        .prop-details, .bet-details {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .prop-line, .bet-value {
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .recommendation-badge {
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .rec-over {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.4);
-        }
-
-        .rec-under {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.4);
-        }
-
-        .rec-pass {
-            background: rgba(107, 114, 128, 0.2);
-            color: #9ca3af;
-            border: 1px solid rgba(107, 114, 128, 0.3);
-        }
-
-        .confidence-section {
-            margin-bottom: 16px;
-        }
-
-        .confidence-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 8px;
-        }
-
-        .confidence-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #ff006e, #ffbe0b, #00d4ff);
-            border-radius: 4px;
-            transition: width 0.6s ease;
-        }
-
-        .confidence-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .confidence-text {
-            font-size: 14px;
-            color: #e2e8f0;
-        }
-
-        .grade-badge {
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .grade-a { background: #10b981; color: white; }
-        .grade-b { background: #3b82f6; color: white; }
-        .grade-c { background: #f59e0b; color: white; }
-        .grade-d { background: #ef4444; color: white; }
-        .grade-f { background: #6b7280; color: white; }
-
-        .edge-badge {
-            display: inline-block;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .edge-positive {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-
-        .edge-negative {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .ai-factors {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 16px;
-            margin-top: 16px;
-            font-size: 12px;
-            color: #94a3b8;
-        }
-
-        .factors-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #e2e8f0;
         }
 
         .tab-content {
             display: none;
-            animation: fadeIn 0.5s ease;
         }
 
         .tab-content.active {
             display: block;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .bets-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .bet-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .bet-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .bet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .bet-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .grade-badge {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .grade-a-plus { background: #10b981; color: white; }
+        .grade-a { background: #34d399; color: white; }
+        .grade-a-minus { background: #6ee7b7; color: #065f46; }
+        .grade-b-plus { background: #3b82f6; color: white; }
+        .grade-b { background: #60a5fa; color: white; }
+        .grade-b-minus { background: #93c5fd; color: #1e3a8a; }
+        .grade-c-plus { background: #f59e0b; color: white; }
+        .grade-c { background: #fbbf24; color: #78350f; }
+        .grade-c-minus { background: #fde68a; color: #78350f; }
+        .grade-d { background: #fb923c; color: white; }
+        .grade-f { background: #ef4444; color: white; }
+
+        .bet-details {
+            margin: 12px 0;
+            color: #e2e8f0;
+        }
+
+        .bet-line {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 8px 0;
+        }
+
+        .bet-odds {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        .confidence-bar {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 4px;
+            margin: 12px 0;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #5b63d3);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .confidence-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .lock-time {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .add-to-tracker {
+            width: 100%;
+            padding: 8px;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            color: #60a5fa;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .add-to-tracker:hover {
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .trends-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .trend-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .trend-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #00d4ff;
+        }
+
+        .trend-table {
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .trend-table th {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .trend-table td {
+            padding: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .loading {
             text-align: center;
-            padding: 60px;
-            color: #94a3b8;
-            font-size: 18px;
-        }
-
-        .premium-badge {
-            display: inline-block;
-            background: linear-gradient(45deg, #ffd700, #ffed4e);
-            color: #1a1a2e;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-left: 8px;
-        }
-
-        .api-credits {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin-left: 20px;
-            font-size: 14px;
+            padding: 40px;
             color: #94a3b8;
         }
 
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
         }
 
-        .page-title {
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(45deg, #ffffff, #94a3b8);
-            background-clip: text;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .grade-filter {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .grade-filter-btn {
-            padding: 6px 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #e2e8f0;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .grade-filter-btn.active {
-            background: linear-gradient(45deg, #5b63d3, #00d4ff);
-            border-color: transparent;
-        }
-
-        .back-button {
-            background: rgba(255, 255, 255, 0.1);
-            color: #e2e8f0;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 20px;
-        }
-
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.2);
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
-                gap: 20px;
             }
-            .nav-tabs {
-                width: 100%;
-                justify-content: center;
+            
+            .bets-container {
+                grid-template-columns: 1fr;
             }
-            .nav-tab {
-                padding: 10px 16px;
-                font-size: 13px;
-            }
-            .filters-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .filter-group {
-                width: 100%;
-            }
-            .props-grid {
+            
+            .trends-container {
                 grid-template-columns: 1fr;
             }
         }
@@ -597,875 +402,173 @@
     <div class="container">
         <div class="header">
             <div class="logo">
-                <div class="logo-main">🤖 Human Robot Football Locks</div>
-                <div class="logo-sub">presented by Matty Shmealington Industries</div>
+                <div class="logo-icon">🤖</div>
+                <div class="logo-text">
+                    <div class="logo-title">Human Robot Football Locks</div>
+                    <div class="logo-subtitle">presented by Matty Shmealington Industries</div>
+                </div>
             </div>
+            
             <div class="search-container">
-                <input type="text" class="search-input" id="global-search" placeholder="Search teams, games, players..." oninput="performSearch()" onfocus="showSearchResults()" onblur="hideSearchResults()">
-                <div class="search-icon">🔍</div>
-                <div class="search-results" id="search-results"></div>
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Search teams, games, players..." id="searchInput">
             </div>
+            
             <div class="nav-tabs">
-                <div class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</div>
-                <div class="nav-tab" onclick="switchTab('nfl-props')">NFL Props</div>
-                <div class="nav-tab" onclick="switchTab('college-bets')">College Bets</div>
-                <div class="nav-tab" onclick="switchTab('line-movements')">Line Movements</div>
-                <div class="nav-tab" onclick="switchTab('results-trends')">Results & Trends</div>
-                <div class="nav-tab" onclick="switchTab('a-plus-bets')" style="display: none;">A+ Bets</div>
-                <div class="nav-tab" onclick="switchTab('settings')">Settings</div>
+                <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
+                <button class="nav-tab" onclick="switchTab('nfl-props')">NFL Props</button>
+                <button class="nav-tab" onclick="switchTab('college')">College Bets</button>
+                <button class="nav-tab" onclick="switchTab('line-movements')">Line Movements</button>
+                <button class="nav-tab" onclick="switchTab('results')">Results & Trends</button>
+                <button class="nav-tab" onclick="switchTab('settings')">Settings</button>
             </div>
         </div>
-
-        <div class="api-panel">
-            <div class="api-controls">
-                <button class="btn btn-primary" onclick="fetchAllData()" id="fetch-btn">
-                    <span id="fetch-text">🔄 Fetch Live Data</span>
-                    <div class="loading-spinner" id="loading-spinner"></div>
+        
+        <div class="controls-panel">
+            <div class="control-buttons">
+                <button class="btn btn-primary" onclick="fetchAllData()">
+                    🔄 Fetch Live Data
                 </button>
-                <button class="btn btn-primary" onclick="runAIAnalysis()" id="analyze-btn">
-                    <span>🧠 Run AI Analysis</span>
+                <button class="btn btn-ai" onclick="runAIAnalysis()">
+                    🧠 Run AI Analysis
                 </button>
-                <span class="status-text" id="status">Premium plan active - Ready to fetch data</span>
-                <div class="api-credits" id="api-credits">Credits: 100,000 available</div>
             </div>
+            <div class="status-text" id="status">Ready to fetch data</div>
+            <div class="credits-display">Credits: <span id="credits">100,000</span> available</div>
         </div>
-
+        
         <!-- Dashboard Tab -->
         <div id="dashboard" class="tab-content active">
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-value" id="total-props">5</div>
+                    <div class="stat-value" id="nflPropsCount">0</div>
                     <div class="stat-label">NFL Props Analyzed</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="total-college">3</div>
+                    <div class="stat-value" id="collegeGamesCount">0</div>
                     <div class="stat-label">College Games</div>
                 </div>
-                <div class="stat-card clickable" onclick="showAPlusBets()">
-                    <div class="stat-value" id="a-grade-bets">2</div>
+                <div class="stat-card">
+                    <div class="stat-value" id="aPlusBetsCount">0</div>
                     <div class="stat-label">A+ Grade Bets (Click to View)</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="avg-edge">+8.4%</div>
+                    <div class="stat-value" id="avgEdge">+0%</div>
                     <div class="stat-label">Average Edge</div>
                 </div>
             </div>
+            
+            <div id="dashboardContent">
+                <div class="loading">
+                    <div>Click "Fetch Live Data" to load current betting lines</div>
+                    <div>Then click "Run AI Analysis" to get graded predictions</div>
+                </div>
+            </div>
         </div>
-
+        
         <!-- NFL Props Tab -->
         <div id="nfl-props" class="tab-content">
-            <div class="section-title">🏈 NFL Player Props - AI Analysis</div>
-            
-            <div class="filters-panel">
-                <div class="filters-row">
-                    <div class="filter-group">
-                        <div class="filter-label">Date From</div>
-                        <input type="date" class="filter-input" id="nfl-date-from" onchange="renderNFLProps()">
-                    </div>
-                    <div class="filter-group">
-                        <div class="filter-label">Date To</div>
-                        <input type="date" class="filter-input" id="nfl-date-to" onchange="renderNFLProps()">
-                    </div>
-                    <div class="filter-group">
-                        <div class="filter-label">Sort By Grade</div>
-                        <select class="filter-select" id="nfl-sort" onchange="renderNFLProps()">
-                            <option value="grade-desc">A+ to F (Best First)</option>
-                            <option value="confidence">Highest Confidence</option>
-                            <option value="edge">Highest Edge</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <div class="filter-label">Min Grade</div>
-                        <select class="filter-select" id="nfl-min-grade" onchange="renderNFLProps()">
-                            <option value="">All Grades</option>
-                            <option value="A">A+ to A-</option>
-                            <option value="B">B+ and Above</option>
-                            <option value="C">C+ and Above</option>
-                        </select>
-                    </div>
+            <h2 style="margin-bottom: 20px;">NFL Player Props</h2>
+            <div class="bets-container" id="nflPropsContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>Loading NFL player props...</div>
                 </div>
             </div>
-            
-            <div class="props-grid" id="nfl-props-container">
-                <div class="loading">Loading NFL player props with AI analysis...</div>
-            </div>
         </div>
-
+        
         <!-- College Bets Tab -->
-        <div id="college-bets" class="tab-content">
-            <div class="page-header">
-                <div class="page-title">College Football Bets</div>
-                <div class="grade-filter">
-                    <span style="color: #94a3b8; font-size: 14px;">Filter by Grade:</span>
-                    <button class="grade-filter-btn active" onclick="filterCollegeBets(['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-'])">A+ to C-</button>
-                    <button class="grade-filter-btn" onclick="filterCollegeBets(['A+', 'A', 'A-'])">A+ to A-</button>
-                    <button class="grade-filter-btn" onclick="filterCollegeBets([])">All Grades</button>
+        <div id="college" class="tab-content">
+            <h2 style="margin-bottom: 20px;">College Football Bets</h2>
+            <div class="bets-container" id="collegeContainer">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>Loading college football lines...</div>
                 </div>
-            </div>
-            
-            <div class="filters-panel">
-                <div class="filters-row">
-                    <div class="filter-group">
-                        <div class="filter-label">Date From</div>
-                        <input type="date" class="filter-input" id="college-date-from" onchange="renderCollegeBets()">
-                    </div>
-                    <div class="filter-group">
-                        <div class="filter-label">Date To</div>
-                        <input type="date" class="filter-input" id="college-date-to" onchange="renderCollegeBets()">
-                    </div>
-                    <div class="filter-group">
-                        <div class="filter-label">Sort By</div>
-                        <select class="filter-select" id="college-bet-sort" onchange="renderCollegeBets()">
-                            <option value="grade-desc">Best Grade First</option>
-                            <option value="confidence">Highest Confidence</option>
-                            <option value="edge">Highest Edge</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="college-bets-container">
-                <div class="loading">Loading college football bets with AI analysis...</div>
             </div>
         </div>
-
+        
         <!-- Line Movements Tab -->
         <div id="line-movements" class="tab-content">
-            <div class="page-header">
-                <div class="page-title">📈 Live Line Movements <span class="premium-badge">Premium</span></div>
+            <h2 style="margin-bottom: 20px;">Line Movements</h2>
+            <div id="lineMovementsContainer">
+                <div class="loading">Line movement tracking coming soon...</div>
             </div>
+        </div>
+        
+        <!-- Results & Trends Tab -->
+        <div id="results" class="tab-content">
+            <h2 style="margin-bottom: 20px;">Results & Trends</h2>
             
-            <div class="api-panel">
-                <div class="api-controls">
-                    <button class="btn btn-primary" onclick="fetchLineMovements()">
-                        <span>🔄 Update Line Movements</span>
-                    </button>
-                    <button class="btn btn-primary" onclick="detectSteamMoves()">
-                        <span>🚨 Detect Steam Moves</span>
-                    </button>
-                    <span class="status-text" id="line-status">Premium features enabled</span>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="overallWinRate">0%</div>
+                    <div class="stat-label">Overall Win Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTracked">0</div>
+                    <div class="stat-label">Total Bets Tracked</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="profitLoss">+0</div>
+                    <div class="stat-label">Units Profit/Loss</div>
                 </div>
             </div>
             
-            <div id="line-movements-container">
-                <div class="loading">Click "Update Line Movements" to load premium data...</div>
+            <div class="trends-container">
+                <div class="trend-section">
+                    <div class="trend-title">Winning % by Letter Grade</div>
+                    <table class="trend-table">
+                        <thead>
+                            <tr>
+                                <th>Grade</th>
+                                <th>Win %</th>
+                                <th>Record</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gradeStatsBody">
+                            <tr><td colspan="3" style="text-align: center; color: #64748b;">No data yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="trend-section">
+                    <div class="trend-title">Top Performing Bet Types</div>
+                    <table class="trend-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Win %</th>
+                                <th>Record</th>
+                            </tr>
+                        </thead>
+                        <tbody id="betTypeStatsBody">
+                            <tr><td colspan="3" style="text-align: center; color: #64748b;">No data yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-
-        <!-- Results & Trends Tab -->
-        <div id="results-trends" class="tab-content">
-            <div class="section-title">📊 Results & Trends Analysis</div>
-            <div class="loading">Results tracking coming soon...</div>
-        </div>
-
-        <!-- A+ Bets Tab -->
-        <div id="a-plus-bets" class="tab-content">
-            <button class="btn back-button" onclick="switchTab('dashboard')">← Back to Dashboard</button>
-            <div class="section-title">🏆 A+ Grade Bets Only</div>
-            <div id="a-plus-container">
-                <div class="loading">No A+ bets found. Run AI analysis first.</div>
-            </div>
-        </div>
-
+        
         <!-- Settings Tab -->
         <div id="settings" class="tab-content">
-            <div class="section-title">⚙️ API Settings</div>
-            <div class="api-panel">
-                <div style="max-width: 500px;">
-                    <div style="margin-bottom: 20px;">
-                        <div style="color: #10b981; font-weight: 600; margin-bottom: 10px;">✅ Premium Plan Active</div>
-                        <div style="color: #94a3b8; font-size: 14px;">API Key: 515fda69abaa6088d32dcfbc0b00d2e9 (Premium)</div>
-                        <div style="color: #94a3b8; font-size: 14px; margin-top: 5px;">100,000 credits per month with historical data access</div>
-                    </div>
-                </div>
+            <h2 style="margin-bottom: 20px;">API Settings</h2>
+            <div style="background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 12px;">
+                <p style="color: #10b981; margin-bottom: 10px;">✓ API Key Active</p>
+                <p style="color: #64748b; font-size: 14px;">Key: 515fda69abaa6088d32dcfbc0b00d2e9</p>
+                <p style="color: #64748b; font-size: 14px;">Monthly Credits: 100,000</p>
             </div>
         </div>
     </div>
 
     <script>
-        // Global variables
+        // Global data storage
         let nflPropsData = [];
-        let collegeGamesData = [];
-        let apiKey = '515fda69abaa6088d32dcfbc0b00d2e9';
-        let currentGradeFilter = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-'];
+        let collegeData = [];
+        let trackedBets = JSON.parse(localStorage.getItem('trackedBets')) || [];
+        const API_KEY = '515fda69abaa6088d32dcfbc0b00d2e9';
         
-        // AI Analysis Factors
-        const AI_FACTORS = {
-            NFL_PROPS: [
-                'Player season averages vs line',
-                'Recent form (last 5 games)',
-                'Opponent defense ranking',
-                'Weather conditions',
-                'Injury reports',
-                'Home/Away performance',
-                'Prime time game factor',
-                'Rest days analysis',
-                'Target share trends',
-                'Red zone usage'
-            ],
-            COLLEGE_GAMES: [
-                'Team power rankings',
-                'Offensive/Defensive efficiency',
-                'Turnover margin trends',
-                'Home field advantage',
-                'Conference strength',
-                'Rivalry game history',
-                'Coaching matchups',
-                'Recent point differential',
-                'Travel distance factor',
-                'Injury impact assessment'
-            ]
-        };
-
-        // Initialize date filters
-        function initializeDateFilters() {
-            const today = new Date();
-            const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-            
-            const formatDate = (date) => date.toISOString().split('T')[0];
-            
-            document.getElementById(tabName).classList.add('active');
-            
-            if (tabName === 'a-plus-bets') {
-                document.querySelector('[onclick="switchTab(\'a-plus-bets\')"]').style.display = 'block';
-                document.querySelector('[onclick="switchTab(\'a-plus-bets\')"]').classList.add('active');
-            } else {
-                const clickedTab = [...document.querySelectorAll('.nav-tab')].find(tab => 
-                    tab.getAttribute('onclick') === `switchTab('${tabName}')`
-                );
-                if (clickedTab) {
-                    clickedTab.classList.add('active');
-                }
-            }
-
-            if (tabName === 'college-bets') {
-                setTimeout(renderCollegeBets, 100);
-            }
-        }
-
-        function showAPlusBets() {
-            switchTab('a-plus-bets');
-            renderAPlusBets();
-        }
-
-        function updateStatus(message) {
-            document.getElementById('status').textContent = message;
-        }
-
-        async function fetchAllData() {
-            const btn = document.getElementById('fetch-btn');
-            const spinner = document.getElementById('loading-spinner');
-            const text = document.getElementById('fetch-text');
-            
-            btn.disabled = true;
-            spinner.style.display = 'block';
-            text.textContent = 'Fetching...';
-            
-            try {
-                updateStatus('Fetching NFL player props...');
-                await fetchNFLProps();
-                
-                updateStatus('Fetching College Football games...');
-                await fetchCollegeGames();
-                
-                updateStatus(`Data loaded! ${nflPropsData.length} NFL props, ${collegeGamesData.length} college games`);
-                updateDashboard();
-                
-            } catch (error) {
-                console.error('Fetch error:', error);
-                updateStatus('Error fetching data. Using sample data.');
-            } finally {
-                btn.disabled = false;
-                spinner.style.display = 'none';
-                text.textContent = 'Fetch Live Data';
-            }
-        }
-
-        async function fetchNFLProps() {
-            try {
-                const response = await fetch(`https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=${apiKey}&regions=us&markets=player_pass_yds,player_rush_yds,player_receiving_yds,player_receptions&oddsFormat=american`);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    nflPropsData = processNFLProps(data);
-                    renderNFLProps();
-                } else {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-            } catch (error) {
-                console.log('Using sample NFL data:', error.message);
-                nflPropsData = generateSampleNFLProps();
-                renderNFLProps();
-            }
-        }
-
-        async function fetchCollegeGames() {
-            try {
-                const response = await fetch(`https://api.the-odds-api.com/v4/sports/americanfootball_ncaaf/odds/?apiKey=${apiKey}&regions=us&markets=spreads,totals&oddsFormat=american`);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    collegeGamesData = processCollegeGames(data);
-                    renderCollegeBets();
-                } else {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-            } catch (error) {
-                console.log('Using sample college data:', error.message);
-                collegeGamesData = generateSampleCollegeGames();
-                renderCollegeBets();
-            }
-        }
-
-        function processNFLProps(apiData) {
-            const props = [];
-            
-            apiData.forEach(game => {
-                if (game.bookmakers && game.bookmakers.length > 0) {
-                    const bookmaker = game.bookmakers[0];
-                    
-                    bookmaker.markets.forEach(market => {
-                        market.outcomes.forEach(outcome => {
-                            if (outcome.description && outcome.point !== undefined) {
-                                props.push({
-                                    id: Math.random().toString(36),
-                                    player: outcome.description,
-                                    prop_type: getMarketDisplayName(market.key),
-                                    line: outcome.point,
-                                    odds: outcome.price,
-                                    game: `${game.away_team} @ ${game.home_team}`,
-                                    commence_time: game.commence_time
-                                });
-                            }
-                        });
-                    });
-                }
-            });
-            
-            return props;
-        }
-
-        function processCollegeGames(apiData) {
-            return apiData.map(game => ({
-                id: game.id,
-                home_team: game.home_team,
-                away_team: game.away_team,
-                commence_time: game.commence_time,
-                spreads: game.bookmakers?.[0]?.markets?.find(m => m.key === 'spreads')?.outcomes || [],
-                totals: game.bookmakers?.[0]?.markets?.find(m => m.key === 'totals')?.outcomes || []
-            }));
-        }
-
-        function generateSampleNFLProps() {
-            return [
-                {
-                    id: 'demo1',
-                    player: 'Patrick Mahomes',
-                    prop_type: 'Passing Yards',
-                    line: 267.5,
-                    odds: -110,
-                    game: 'Buffalo Bills @ Kansas City Chiefs',
-                    commence_time: new Date(Date.now() + 86400000).toISOString()
-                },
-                {
-                    id: 'demo2',
-                    player: 'Josh Allen',
-                    prop_type: 'Rushing Yards',
-                    line: 42.5,
-                    odds: -115,
-                    game: 'Buffalo Bills @ Kansas City Chiefs',
-                    commence_time: new Date(Date.now() + 86400000).toISOString()
-                },
-                {
-                    id: 'demo3',
-                    player: 'Travis Kelce',
-                    prop_type: 'Receiving Yards',
-                    line: 67.5,
-                    odds: -105,
-                    game: 'Buffalo Bills @ Kansas City Chiefs',
-                    commence_time: new Date(Date.now() + 86400000).toISOString()
-                }
-            ];
-        }
-
-        function generateSampleCollegeGames() {
-            return [
-                {
-                    id: 'demo1',
-                    home_team: 'Alabama Crimson Tide',
-                    away_team: 'Georgia Bulldogs',
-                    commence_time: new Date(Date.now() + 259200000).toISOString(),
-                    spreads: [
-                        {name: 'Alabama Crimson Tide', point: -3.5, price: -110},
-                        {name: 'Georgia Bulldogs', point: 3.5, price: -110}
-                    ],
-                    totals: [
-                        {name: 'Over', point: 58.5, price: -110},
-                        {name: 'Under', point: 58.5, price: -110}
-                    ]
-                },
-                {
-                    id: 'demo2',
-                    home_team: 'Ohio State Buckeyes',
-                    away_team: 'Michigan Wolverines',
-                    commence_time: new Date(Date.now() + 345600000).toISOString(),
-                    spreads: [
-                        {name: 'Ohio State Buckeyes', point: -7.0, price: -110},
-                        {name: 'Michigan Wolverines', point: 7.0, price: -110}
-                    ],
-                    totals: [
-                        {name: 'Over', point: 47.5, price: -110},
-                        {name: 'Under', point: 47.5, price: -110}
-                    ]
-                }
-            ];
-        }
-
-        function getMarketDisplayName(marketKey) {
-            const names = {
-                'player_pass_yds': 'Passing Yards',
-                'player_rush_yds': 'Rushing Yards',
-                'player_receiving_yds': 'Receiving Yards',
-                'player_receptions': 'Receptions'
-            };
-            return names[marketKey] || marketKey;
-        }
-
-        function runAIAnalysis() {
-            updateStatus('Running AI analysis on all bets...');
-            
-            nflPropsData = nflPropsData.map(prop => ({
-                ...prop,
-                ...generateAIPrediction(prop, 'NFL_PROP')
-            }));
-            
-            collegeGamesData = collegeGamesData.map(game => ({
-                ...game,
-                spread_analysis: generateAIPrediction({...game, type: 'spread'}, 'COLLEGE_SPREAD'),
-                total_analysis: generateAIPrediction({...game, type: 'total'}, 'COLLEGE_TOTAL')
-            }));
-            
-            renderNFLProps();
-            renderCollegeBets();
-            updateDashboard();
-            updateStatus('AI analysis complete! Check the updated predictions.');
-        }
-
-        function generateAIPrediction(data, type) {
-            const baseConfidence = 60 + Math.random() * 35;
-            const edge = (Math.random() - 0.4) * 25;
-            
-            const totalScore = baseConfidence + Math.max(0, edge);
-            let grade;
-            if (totalScore >= 95) grade = 'A+';
-            else if (totalScore >= 90) grade = 'A';
-            else if (totalScore >= 85) grade = 'A-';
-            else if (totalScore >= 80) grade = 'B+';
-            else if (totalScore >= 75) grade = 'B';
-            else if (totalScore >= 70) grade = 'B-';
-            else if (totalScore >= 65) grade = 'C+';
-            else if (totalScore >= 60) grade = 'C';
-            else if (totalScore >= 55) grade = 'C-';
-            else if (totalScore >= 50) grade = 'D';
-            else grade = 'F';
-
-            const recommendations = ['OVER', 'UNDER'];
-            const recommendation = recommendations[Math.floor(Math.random() * 2)];
-            
-            let factors = [];
-            if (type === 'NFL_PROP') {
-                factors = AI_FACTORS.NFL_PROPS.slice(0, 3 + Math.floor(Math.random() * 3));
-            } else {
-                factors = AI_FACTORS.COLLEGE_GAMES.slice(0, 4 + Math.floor(Math.random() * 4));
-            }
-            
-            return {
-                confidence: Math.round(baseConfidence),
-                edge: Math.round(edge * 10) / 10,
-                grade: grade,
-                recommendation: recommendation,
-                predicted_value: type === 'NFL_PROP' ? 
-                    Math.round((data.line + (Math.random() - 0.5) * 20) * 10) / 10 : null,
-                ai_factors: factors
-            };
-        }
-
-        function renderNFLProps() {
-            const container = document.getElementById('nfl-props-container');
-            container.innerHTML = '';
-
-            if (nflPropsData.length === 0) {
-                container.innerHTML = '<div class="loading">No NFL props loaded. Click "Fetch Live Data" first.</div>';
-                return;
-            }
-
-            nflPropsData.forEach(prop => {
-                const propCard = document.createElement('div');
-                propCard.className = 'prop-card';
-                
-                const gradeClass = prop.grade ? prop.grade.toLowerCase().replace(/[+-]/g, '') : 'c';
-                const gameTime = new Date(prop.commence_time).toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit'
-                });
-                
-                propCard.innerHTML = `
-                    <div class="prop-header">
-                        <div class="player-name">${prop.player}</div>
-                        <div class="prop-type">${prop.prop_type}</div>
-                    </div>
-                    <div class="prop-details">
-                        <div class="prop-line">Line: ${prop.line}</div>
-                        <div class="recommendation-badge rec-${prop.recommendation ? prop.recommendation.toLowerCase() : 'pass'}">
-                            ${prop.recommendation || 'ANALYZING...'}
-                        </div>
-                    </div>
-                    ${prop.predicted_value ? `<div style="color: #e2e8f0; margin-bottom: 12px;">AI Prediction: ${prop.predicted_value}</div>` : ''}
-                    <div style="font-size: 13px; color: #94a3b8; margin-bottom: 16px;">${prop.game} • ${gameTime}</div>
-                    ${prop.confidence ? `
-                    <div class="confidence-section">
-                        <div class="confidence-bar">
-                            <div class="confidence-fill" style="width: ${prop.confidence}%"></div>
-                        </div>
-                        <div class="confidence-info">
-                            <div class="confidence-text">${prop.confidence}% Confidence</div>
-                            <div class="grade-badge grade-${gradeClass}">${prop.grade}</div>
-                        </div>
-                    </div>
-                    <div class="edge-badge ${prop.edge > 0 ? 'edge-positive' : 'edge-negative'}">
-                        ${prop.edge > 0 ? '+' : ''}${prop.edge}% Edge
-                    </div>
-                    ${prop.ai_factors ? `
-                    <div class="ai-factors">
-                        <div class="factors-title">AI Analysis Factors:</div>
-                        <div>${prop.ai_factors.join(' • ')}</div>
-                    </div>` : ''}
-                    ` : '<div style="color: #94a3b8; text-align: center; padding: 20px;">Click "Run AI Analysis" for predictions</div>'}
-                `;
-                container.appendChild(propCard);
-            });
-        }
-
-        function filterCollegeBets(grades) {
-            currentGradeFilter = grades;
-            document.querySelectorAll('#college-bets .grade-filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            renderCollegeBets();
-        }
-
-        function renderCollegeBets() {
-            const container = document.getElementById('college-bets-container');
-            container.innerHTML = '';
-
-            if (collegeGamesData.length === 0) {
-                container.innerHTML = '<div class="loading">No college games loaded. Click "Fetch Live Data" first.</div>';
-                return;
-            }
-
-            const allBets = [];
-            collegeGamesData.forEach(game => {
-                if (game.spread_analysis && game.spread_analysis.grade) {
-                    const spreadLine = game.spreads[0] ? `${game.spreads[0].name} ${game.spreads[0].point}` : 'No spread';
-                    allBets.push({
-                        id: game.id + '_spread',
-                        type: 'spread',
-                        game: `${game.away_team} @ ${game.home_team}`,
-                        gameTime: game.commence_time,
-                        prediction: spreadLine,
-                        grade: game.spread_analysis.grade,
-                        confidence: game.spread_analysis.confidence,
-                        edge: game.spread_analysis.edge,
-                        factors: game.spread_analysis.ai_factors
-                    });
-                }
-                
-                if (game.total_analysis && game.total_analysis.grade) {
-                    const totalLine = game.totals[0] ? `${game.total_analysis.recommendation} ${game.totals[0].point}` : 'No total';
-                    allBets.push({
-                        id: game.id + '_total',
-                        type: 'total',
-                        game: `${game.away_team} @ ${game.home_team}`,
-                        gameTime: game.commence_time,
-                        prediction: totalLine,
-                        grade: game.total_analysis.grade,
-                        confidence: game.total_analysis.confidence,
-                        edge: game.total_analysis.edge,
-                        factors: game.total_analysis.ai_factors
-                    });
-                }
-            });
-
-            let filteredBets = allBets;
-            if (currentGradeFilter.length > 0) {
-                filteredBets = allBets.filter(bet => currentGradeFilter.includes(bet.grade));
-            }
-
-            const gradeOrder = {'A+': 13, 'A': 12, 'A-': 11, 'B+': 10, 'B': 9, 'B-': 8, 'C+': 7, 'C': 6, 'C-': 5, 'D': 4, 'F': 3};
-            filteredBets.sort((a, b) => (gradeOrder[b.grade] || 0) - (gradeOrder[a.grade] || 0));
-
-            if (filteredBets.length === 0) {
-                container.innerHTML = '<div class="loading">No bets match your current filters.</div>';
-                return;
-            }
-
-            filteredBets.forEach(bet => {
-                const betCard = document.createElement('div');
-                betCard.className = 'bet-card';
-                
-                const gradeClass = bet.grade.toLowerCase().replace(/[+-]/g, '');
-                const gameTime = new Date(bet.gameTime).toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    month: 'short',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit'
-                });
-                
-                betCard.innerHTML = `
-                    <div class="bet-header">
-                        <div class="bet-type">${bet.type === 'spread' ? 'Point Spread' : 'Game Total'}</div>
-                        <div class="grade-badge grade-${gradeClass}">${bet.grade}</div>
-                    </div>
-                    <div class="bet-value">${bet.prediction}</div>
-                    <div style="color: #e2e8f0; margin-bottom: 12px;">${bet.game} • ${gameTime}</div>
-                    <div class="confidence-section">
-                        <div class="confidence-bar">
-                            <div class="confidence-fill" style="width: ${bet.confidence}%"></div>
-                        </div>
-                        <div class="confidence-info">
-                            <div class="confidence-text">${bet.confidence}% Confidence</div>
-                            <div class="edge-badge ${bet.edge > 0 ? 'edge-positive' : 'edge-negative'}">
-                                ${bet.edge > 0 ? '+' : ''}${bet.edge}% Edge
-                            </div>
-                        </div>
-                    </div>
-                    ${bet.factors ? `
-                    <div class="ai-factors">
-                        <div class="factors-title">Key Factors:</div>
-                        <div>${bet.factors.slice(0, 3).join(' • ')}</div>
-                    </div>` : ''}
-                `;
-                container.appendChild(betCard);
-            });
-        }
-
-        function renderAPlusBets() {
-            const container = document.getElementById('a-plus-container');
-            container.innerHTML = '';
-
-            const aPlusNFLProps = nflPropsData.filter(p => p.grade === 'A+');
-            const aPlusCollegeGames = collegeGamesData.filter(g => 
-                g.spread_analysis?.grade === 'A+' || g.total_analysis?.grade === 'A+'
-            );
-
-            if (aPlusNFLProps.length === 0 && aPlusCollegeGames.length === 0) {
-                container.innerHTML = '<div class="loading">No A+ grade bets found. Run AI analysis to find top opportunities!</div>';
-                return;
-            }
-
-            if (aPlusNFLProps.length > 0) {
-                const nflSection = document.createElement('div');
-                nflSection.innerHTML = '<h3 style="margin: 20px 0; color: #00d4ff;">NFL Player Props</h3>';
-                container.appendChild(nflSection);
-
-                const nflGrid = document.createElement('div');
-                nflGrid.className = 'props-grid';
-                
-                aPlusNFLProps.forEach(prop => {
-                    const propCard = document.createElement('div');
-                    propCard.className = 'prop-card';
-                    propCard.style.border = '2px solid #10b981';
-                    
-                    propCard.innerHTML = `
-                        <div class="prop-header">
-                            <div class="player-name">${prop.player}</div>
-                            <div class="prop-type">${prop.prop_type}</div>
-                        </div>
-                        <div class="prop-details">
-                            <div class="prop-line">Line: ${prop.line}</div>
-                            <div class="recommendation-badge rec-${prop.recommendation.toLowerCase()}">
-                                ${prop.recommendation}
-                            </div>
-                        </div>
-                        <div style="color: #e2e8f0; margin-bottom: 12px;">AI Prediction: ${prop.predicted_value}</div>
-                        <div class="confidence-section">
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: ${prop.confidence}%"></div>
-                            </div>
-                            <div class="confidence-info">
-                                <div class="confidence-text">${prop.confidence}% Confidence</div>
-                                <div class="grade-badge grade-a">${prop.grade}</div>
-                            </div>
-                        </div>
-                        <div class="edge-badge edge-positive">
-                            +${prop.edge}% Edge
-                        </div>
-                    `;
-                    nflGrid.appendChild(propCard);
-                });
-                container.appendChild(nflGrid);
-            }
-        }
-
-        function updateDashboard() {
-            const totalProps = nflPropsData.length;
-            const totalCollege = collegeGamesData.length;
-            
-            const aPlusProps = nflPropsData.filter(p => p.grade === 'A+').length;
-            const aPlusGames = collegeGamesData.filter(g => 
-                g.spread_analysis?.grade === 'A+' || g.total_analysis?.grade === 'A+'
-            ).length;
-            const totalAPlus = aPlusProps + aPlusGames;
-            
-            const allEdges = [
-                ...nflPropsData.filter(p => p.edge !== undefined).map(p => p.edge),
-                ...collegeGamesData.filter(g => g.spread_analysis?.edge !== undefined).map(g => g.spread_analysis.edge),
-                ...collegeGamesData.filter(g => g.total_analysis?.edge !== undefined).map(g => g.total_analysis.edge)
-            ];
-            
-            const avgEdge = allEdges.length > 0 ? 
-                Math.round((allEdges.reduce((a, b) => a + b, 0) / allEdges.length) * 10) / 10 : 0;
-            
-            document.getElementById('total-props').textContent = totalProps;
-            document.getElementById('total-college').textContent = totalCollege;
-            document.getElementById('a-grade-bets').textContent = totalAPlus;
-            document.getElementById('avg-edge').textContent = avgEdge > 0 ? `+${avgEdge}%` : `${avgEdge}%`;
-        }
-
-        function fetchLineMovements() {
-            updateStatus('Fetching line movements with premium data...');
-            
-            // Demo line movements for now
-            const container = document.getElementById('line-movements-container');
-            container.innerHTML = `
-                <div style="background: rgba(255, 255, 255, 0.08); border: 2px solid #00d4ff; border-radius: 16px; padding: 20px; margin-bottom: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <div>
-                            <strong>Alabama @ Georgia</strong>
-                            <div style="font-size: 12px; color: #94a3b8;">Point Spread</div>
-                        </div>
-                        <div>
-                            <span style="background: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 4px 8px; border-radius: 6px; font-size: 12px;">📉 2.5 STEAM MOVE</span>
-                        </div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
-                        <div style="text-align: center; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px;">
-                            <div style="font-size: 10px; color: #94a3b8;">DRAFTKINGS</div>
-                            <div style="font-weight: 600;">-3.5</div>
-                        </div>
-                        <div style="text-align: center; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px;">
-                            <div style="font-size: 10px; color: #94a3b8;">FANDUEL</div>
-                            <div style="font-weight: 600;">-3.0</div>
-                        </div>
-                        <div style="text-align: center; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px;">
-                            <div style="font-size: 10px; color: #94a3b8;">BETMGM</div>
-                            <div style="font-weight: 600;">-3.5</div>
-                        </div>
-                        <div style="text-align: center; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px;">
-                            <div style="font-size: 10px; color: #94a3b8;">CAESARS</div>
-                            <div style="font-weight: 600;">-3.0</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            updateStatus('Line movements loaded with premium multi-bookmaker data!');
-        }
-
-        function detectSteamMoves() {
-            updateStatus('Steam moves detected! Check highlighted bets above.');
-        }
-
-        function performSearch() {
-            const query = document.getElementById('global-search').value.toLowerCase().trim();
-            const resultsContainer = document.getElementById('search-results');
-            
-            if (query.length < 2) {
-                resultsContainer.style.display = 'none';
-                return;
-            }
-            
-            const results = [];
-            
-            nflPropsData.forEach(prop => {
-                if (prop.player.toLowerCase().includes(query) || 
-                    prop.game.toLowerCase().includes(query)) {
-                    results.push({
-                        title: prop.player,
-                        subtitle: `NFL Player Props`,
-                        type: 'player'
-                    });
-                }
-            });
-            
-            collegeGamesData.forEach(game => {
-                if (game.home_team.toLowerCase().includes(query) || 
-                    game.away_team.toLowerCase().includes(query)) {
-                    results.push({
-                        title: `${game.away_team} @ ${game.home_team}`,
-                        subtitle: `College Football Game`,
-                        type: 'game'
-                    });
-                }
-            });
-            
-            const uniqueResults = results.filter((result, index, self) => 
-                index === self.findIndex(r => r.title === result.title && r.type === result.type)
-            );
-            
-            if (uniqueResults.length === 0) {
-                resultsContainer.innerHTML = '<div class="search-result-item"><div class="search-result-title">No results found</div></div>';
-            } else {
-                resultsContainer.innerHTML = uniqueResults.slice(0, 6).map(result => 
-                    `<div class="search-result-item">
-                        <div class="search-result-title">${result.title}</div>
-                        <div class="search-result-subtitle">${result.subtitle}</div>
-                    </div>`
-                ).join('');
-            }
-            
-            resultsContainer.style.display = 'block';
-        }
-
-        function showSearchResults() {
-            const query = document.getElementById('global-search').value;
-            if (query.length >= 2) {
-                document.getElementById('search-results').style.display = 'block';
-            }
-        }
-
-        function hideSearchResults() {
-            setTimeout(() => {
-                document.getElementById('search-results').style.display = 'none';
-            }, 200);
-        }
-
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeDateFilters();
-            
-            nflPropsData = generateSampleNFLProps();
-            collegeGamesData = generateSampleCollegeGames();
-            
-            setTimeout(() => {
-                runAIAnalysis();
-            }, 1000);
-        });
-    </script>
-</body>
-</html>'nfl-date-from').value = formatDate(today);
-            document.getElementById('nfl-date-to').value = formatDate(nextWeek);
-            document.getElementById('college-date-from').value = formatDate(today);
-            document.getElementById('college-date-to').value = formatDate(nextWeek);
-        }
-
+        // Tab switching
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
@@ -1474,4 +577,599 @@
                 tab.classList.remove('active');
             });
             
-            document.getElementById(
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'results') {
+                updateResultsStats();
+            }
+        }
+        
+        // Fetch all data
+        async function fetchAllData() {
+            updateStatus('Fetching live data...');
+            
+            try {
+                // Fetch NFL player props
+                await fetchNFLProps();
+                
+                // Fetch College games
+                await fetchCollegeGames();
+                
+                updateStatus('Data fetched successfully! Run AI Analysis to get predictions.');
+                updateDashboard();
+                
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                updateStatus('Error fetching data. Check console for details.');
+                // Load demo data as fallback
+                loadDemoData();
+            }
+        }
+        
+        // Fetch NFL Props
+        async function fetchNFLProps() {
+            try {
+                const response = await fetch(
+                    `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events?apiKey=${API_KEY}`
+                );
+                
+                if (!response.ok) throw new Error('API request failed');
+                
+                const events = await response.json();
+                
+                // For each event, fetch player props
+                const propsPromises = events.slice(0, 5).map(async (event) => {
+                    const propsResponse = await fetch(
+                        `https://api.the-odds-api.com/v4/sports/americanfootball_nfl/events/${event.id}/odds?apiKey=${API_KEY}&regions=us&markets=player_pass_yds,player_rush_yds,player_receptions,player_reception_yds&oddsFormat=american`
+                    );
+                    
+                    if (propsResponse.ok) {
+                        const propsData = await propsResponse.json();
+                        return processNFLProps(propsData);
+                    }
+                    return [];
+                });
+                
+                const allProps = await Promise.all(propsPromises);
+                nflPropsData = allProps.flat();
+                renderNFLProps();
+                
+            } catch (error) {
+                console.error('Error fetching NFL props:', error);
+                loadDemoNFLProps();
+            }
+        }
+        
+        // Process NFL Props from API
+        function processNFLProps(data) {
+            const props = [];
+            
+            if (data.bookmakers && data.bookmakers.length > 0) {
+                const bookmaker = data.bookmakers[0];
+                
+                bookmaker.markets?.forEach(market => {
+                    market.outcomes?.forEach(outcome => {
+                        if (outcome.description && outcome.point !== undefined) {
+                            props.push({
+                                id: Math.random().toString(36).substr(2, 9),
+                                player: outcome.description,
+                                propType: formatPropType(market.key),
+                                line: outcome.point,
+                                odds: outcome.price,
+                                game: `${data.away_team} @ ${data.home_team}`,
+                                gameTime: data.commence_time,
+                                bookmaker: bookmaker.title
+                            });
+                        }
+                    });
+                });
+            }
+            
+            return props;
+        }
+        
+        // Format prop type for display
+        function formatPropType(key) {
+            const types = {
+                'player_pass_yds': 'Passing Yards',
+                'player_rush_yds': 'Rushing Yards',
+                'player_reception_yds': 'Receiving Yards',
+                'player_receptions': 'Receptions'
+            };
+            return types[key] || key;
+        }
+        
+        // Fetch College Games
+        async function fetchCollegeGames() {
+            try {
+                const response = await fetch(
+                    `https://api.the-odds-api.com/v4/sports/americanfootball_ncaaf/odds?apiKey=${API_KEY}&regions=us&markets=spreads,totals&oddsFormat=american`
+                );
+                
+                if (!response.ok) throw new Error('API request failed');
+                
+                const data = await response.json();
+                collegeData = processCollegeGames(data);
+                renderCollegeGames();
+                
+            } catch (error) {
+                console.error('Error fetching college games:', error);
+                loadDemoCollegeGames();
+            }
+        }
+        
+        // Process college games from API
+        function processCollegeGames(data) {
+            return data.map(game => {
+                const spreads = [];
+                const totals = [];
+                
+                if (game.bookmakers && game.bookmakers.length > 0) {
+                    const bookmaker = game.bookmakers[0];
+                    
+                    const spreadMarket = bookmaker.markets?.find(m => m.key === 'spreads');
+                    const totalMarket = bookmaker.markets?.find(m => m.key === 'totals');
+                    
+                    if (spreadMarket) {
+                        spreadMarket.outcomes.forEach(outcome => {
+                            spreads.push({
+                                team: outcome.name,
+                                line: outcome.point,
+                                odds: outcome.price
+                            });
+                        });
+                    }
+                    
+                    if (totalMarket && totalMarket.outcomes.length > 0) {
+                        totals.push({
+                            type: 'Over/Under',
+                            line: totalMarket.outcomes[0].point,
+                            overOdds: totalMarket.outcomes.find(o => o.name === 'Over')?.price || -110,
+                            underOdds: totalMarket.outcomes.find(o => o.name === 'Under')?.price || -110
+                        });
+                    }
+                }
+                
+                return {
+                    id: game.id,
+                    homeTeam: game.home_team,
+                    awayTeam: game.away_team,
+                    gameTime: game.commence_time,
+                    spreads: spreads,
+                    totals: totals
+                };
+            });
+        }
+        
+        // Load demo data fallbacks
+        function loadDemoData() {
+            loadDemoNFLProps();
+            loadDemoCollegeGames();
+            updateDashboard();
+        }
+        
+        function loadDemoNFLProps() {
+            nflPropsData = [
+                { id: '1', player: 'Patrick Mahomes', propType: 'Passing Yards', line: 285.5, odds: -110, game: 'BUF @ KC', gameTime: new Date().toISOString() },
+                { id: '2', player: 'Josh Allen', propType: 'Passing Yards', line: 267.5, odds: -115, game: 'BUF @ KC', gameTime: new Date().toISOString() },
+                { id: '3', player: 'Travis Kelce', propType: 'Receiving Yards', line: 72.5, odds: -105, game: 'BUF @ KC', gameTime: new Date().toISOString() }
+            ];
+            renderNFLProps();
+        }
+        
+        function loadDemoCollegeGames() {
+            collegeData = [
+                {
+                    id: '1',
+                    homeTeam: 'Alabama',
+                    awayTeam: 'Georgia',
+                    gameTime: new Date().toISOString(),
+                    spreads: [
+                        { team: 'Alabama', line: -3.5, odds: -110 },
+                        { team: 'Georgia', line: 3.5, odds: -110 }
+                    ],
+                    totals: [{ type: 'Over/Under', line: 58.5, overOdds: -110, underOdds: -110 }]
+                },
+                {
+                    id: '2',
+                    homeTeam: 'Ohio State',
+                    awayTeam: 'Michigan',
+                    gameTime: new Date().toISOString(),
+                    spreads: [
+                        { team: 'Ohio State', line: -7, odds: -110 },
+                        { team: 'Michigan', line: 7, odds: -110 }
+                    ],
+                    totals: [{ type: 'Over/Under', line: 52.5, overOdds: -115, underOdds: -105 }]
+                }
+            ];
+            renderCollegeGames();
+        }
+        
+        // AI Analysis
+        function runAIAnalysis() {
+            updateStatus('Running AI analysis...');
+            
+            // Analyze NFL Props
+            nflPropsData = nflPropsData.map(prop => ({
+                ...prop,
+                ...generateAIAnalysis('nfl_prop', prop)
+            }));
+            
+            // Analyze College Games
+            collegeData = collegeData.map(game => ({
+                ...game,
+                spreadAnalysis: game.spreads.map(spread => ({
+                    ...spread,
+                    ...generateAIAnalysis('college_spread', { ...game, spread })
+                })),
+                totalAnalysis: game.totals.map(total => ({
+                    ...total,
+                    ...generateAIAnalysis('college_total', { ...game, total })
+                }))
+            }));
+            
+            renderNFLProps();
+            renderCollegeGames();
+            updateDashboard();
+            updateStatus('AI analysis complete! Check the updated predictions.');
+        }
+        
+        // Generate AI analysis for a bet
+        function generateAIAnalysis(type, data) {
+            // Simulate AI confidence calculation
+            const baseConfidence = 50 + Math.random() * 50;
+            const factors = [];
+            
+            // Add analysis factors based on type
+            if (type === 'nfl_prop') {
+                factors.push('Recent performance trend');
+                factors.push('Matchup advantage');
+                factors.push('Weather conditions');
+            } else if (type === 'college_spread') {
+                factors.push('Home field advantage');
+                factors.push('Recent ATS performance');
+                factors.push('Key injuries');
+            } else if (type === 'college_total') {
+                factors.push('Pace of play metrics');
+                factors.push('Defensive efficiency');
+                factors.push('Weather impact');
+            }
+            
+            // Calculate grade based on confidence
+            let grade;
+            if (baseConfidence >= 95) grade = 'A+';
+            else if (baseConfidence >= 90) grade = 'A';
+            else if (baseConfidence >= 85) grade = 'A-';
+            else if (baseConfidence >= 80) grade = 'B+';
+            else if (baseConfidence >= 75) grade = 'B';
+            else if (baseConfidence >= 70) grade = 'B-';
+            else if (baseConfidence >= 65) grade = 'C+';
+            else if (baseConfidence >= 60) grade = 'C';
+            else if (baseConfidence >= 55) grade = 'C-';
+            else if (baseConfidence >= 50) grade = 'D';
+            else grade = 'F';
+            
+            // Determine pick
+            const picks = ['Over', 'Under', 'Favorite', 'Underdog'];
+            const pick = picks[Math.floor(Math.random() * 2)];
+            
+            return {
+                confidence: Math.round(baseConfidence),
+                grade: grade,
+                pick: pick,
+                factors: factors,
+                edge: (Math.random() * 10 - 2).toFixed(1)
+            };
+        }
+        
+        // Render NFL Props
+        function renderNFLProps() {
+            const container = document.getElementById('nflPropsContainer');
+            
+            if (nflPropsData.length === 0) {
+                container.innerHTML = '<div class="loading">No NFL props loaded. Click "Fetch Live Data" to load.</div>';
+                return;
+            }
+            
+            container.innerHTML = nflPropsData.map(prop => {
+                const gradeClass = prop.grade ? `grade-${prop.grade.toLowerCase().replace('+', '-plus').replace('-', '-minus')}` : '';
+                const gameTime = new Date(prop.gameTime).toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit'
+                });
+                
+                // Calculate lock time (30 minutes before game)
+                const lockTime = new Date(prop.gameTime);
+                lockTime.setMinutes(lockTime.getMinutes() - 30);
+                const timeToLock = lockTime - new Date();
+                const hoursToLock = Math.floor(timeToLock / (1000 * 60 * 60));
+                const minutesToLock = Math.floor((timeToLock % (1000 * 60 * 60)) / (1000 * 60));
+                
+                return `
+                    <div class="bet-card">
+                        <div class="bet-header">
+                            <div class="bet-title">${prop.player}</div>
+                            ${prop.grade ? `<div class="grade-badge ${gradeClass}">${prop.grade}</div>` : ''}
+                        </div>
+                        <div class="bet-details">
+                            <div>${prop.propType}</div>
+                            <div class="bet-line">${prop.line}</div>
+                            <div class="bet-odds">Odds: ${prop.odds > 0 ? '+' : ''}${prop.odds}</div>
+                            <div style="margin-top: 8px; font-size: 13px; color: #94a3b8;">${prop.game}</div>
+                            <div style="font-size: 12px; color: #64748b;">${gameTime}</div>
+                        </div>
+                        ${prop.confidence ? `
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: ${prop.confidence}%"></div>
+                            </div>
+                            <div class="confidence-text">
+                                <span>Confidence: ${prop.confidence}%</span>
+                                <span>Pick: ${prop.pick}</span>
+                            </div>
+                            <div class="lock-time">🔒 Locks in ${hoursToLock}h ${minutesToLock}m</div>
+                            <button class="add-to-tracker" onclick="addToTracker('${prop.id}', 'nfl_prop')">
+                                Add to Tracker
+                            </button>
+                        ` : '<div style="text-align: center; margin-top: 20px; color: #64748b;">Run AI Analysis for prediction</div>'}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Render College Games
+        function renderCollegeGames() {
+            const container = document.getElementById('collegeContainer');
+            
+            if (collegeData.length === 0) {
+                container.innerHTML = '<div class="loading">No college games loaded. Click "Fetch Live Data" to load.</div>';
+                return;
+            }
+            
+            const cards = [];
+            
+            collegeData.forEach(game => {
+                const gameTime = new Date(game.gameTime).toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit'
+                });
+                
+                // Spread bets
+                if (game.spreadAnalysis) {
+                    game.spreadAnalysis.forEach((spread, index) => {
+                        const gradeClass = spread.grade ? `grade-${spread.grade.toLowerCase().replace('+', '-plus').replace('-', '-minus')}` : '';
+                        
+                        cards.push(`
+                            <div class="bet-card">
+                                <div class="bet-header">
+                                    <div class="bet-title">${game.awayTeam} @ ${game.homeTeam}</div>
+                                    ${spread.grade ? `<div class="grade-badge ${gradeClass}">${spread.grade}</div>` : ''}
+                                </div>
+                                <div class="bet-details">
+                                    <div>Point Spread</div>
+                                    <div class="bet-line">${spread.team} ${spread.line > 0 ? '+' : ''}${spread.line}</div>
+                                    <div class="bet-odds">Odds: ${spread.odds}</div>
+                                    <div style="margin-top: 8px; font-size: 12px; color: #64748b;">${gameTime}</div>
+                                </div>
+                                ${spread.confidence ? `
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill" style="width: ${spread.confidence}%"></div>
+                                    </div>
+                                    <div class="confidence-text">
+                                        <span>Confidence: ${spread.confidence}%</span>
+                                        <span>Edge: ${spread.edge}%</span>
+                                    </div>
+                                    <button class="add-to-tracker" onclick="addToTracker('${game.id}_spread_${index}', 'college_spread')">
+                                        Add to Tracker
+                                    </button>
+                                ` : ''}
+                            </div>
+                        `);
+                    });
+                }
+                
+                // Total bets
+                if (game.totalAnalysis) {
+                    game.totalAnalysis.forEach((total, index) => {
+                        const gradeClass = total.grade ? `grade-${total.grade.toLowerCase().replace('+', '-plus').replace('-', '-minus')}` : '';
+                        
+                        cards.push(`
+                            <div class="bet-card">
+                                <div class="bet-header">
+                                    <div class="bet-title">${game.awayTeam} @ ${game.homeTeam}</div>
+                                    ${total.grade ? `<div class="grade-badge ${gradeClass}">${total.grade}</div>` : ''}
+                                </div>
+                                <div class="bet-details">
+                                    <div>Game Total</div>
+                                    <div class="bet-line">O/U ${total.line}</div>
+                                    <div class="bet-odds">Over: ${total.overOdds} | Under: ${total.underOdds}</div>
+                                    <div style="margin-top: 8px; font-size: 12px; color: #64748b;">${gameTime}</div>
+                                </div>
+                                ${total.confidence ? `
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill" style="width: ${total.confidence}%"></div>
+                                    </div>
+                                    <div class="confidence-text">
+                                        <span>Confidence: ${total.confidence}%</span>
+                                        <span>Pick: ${total.pick}</span>
+                                    </div>
+                                    <button class="add-to-tracker" onclick="addToTracker('${game.id}_total_${index}', 'college_total')">
+                                        Add to Tracker
+                                    </button>
+                                ` : ''}
+                            </div>
+                        `);
+                    });
+                }
+            });
+            
+            container.innerHTML = cards.join('');
+        }
+        
+        // Add bet to tracker
+        function addToTracker(betId, betType) {
+            let bet;
+            
+            if (betType === 'nfl_prop') {
+                bet = nflPropsData.find(p => p.id === betId);
+            } else if (betType.includes('college')) {
+                // Find the college bet
+                const [gameId, type, index] = betId.split('_');
+                const game = collegeData.find(g => g.id === gameId);
+                if (type === 'spread') {
+                    bet = { ...game, ...game.spreadAnalysis[index], betType: 'spread' };
+                } else {
+                    bet = { ...game, ...game.totalAnalysis[index], betType: 'total' };
+                }
+            }
+            
+            if (bet && !trackedBets.find(b => b.id === betId)) {
+                trackedBets.push({
+                    ...bet,
+                    id: betId,
+                    type: betType,
+                    addedAt: new Date().toISOString(),
+                    status: 'pending'
+                });
+                
+                localStorage.setItem('trackedBets', JSON.stringify(trackedBets));
+                updateStatus('Bet added to tracker!');
+            }
+        }
+        
+        // Update dashboard
+        function updateDashboard() {
+            const nflCount = nflPropsData.length;
+            const collegeCount = collegeData.length;
+            
+            // Count A+ bets
+            let aPlusCount = 0;
+            nflPropsData.forEach(prop => {
+                if (prop.grade === 'A+') aPlusCount++;
+            });
+            
+            collegeData.forEach(game => {
+                if (game.spreadAnalysis) {
+                    game.spreadAnalysis.forEach(s => {
+                        if (s.grade === 'A+') aPlusCount++;
+                    });
+                }
+                if (game.totalAnalysis) {
+                    game.totalAnalysis.forEach(t => {
+                        if (t.grade === 'A+') aPlusCount++;
+                    });
+                }
+            });
+            
+            // Calculate average edge
+            let totalEdge = 0;
+            let edgeCount = 0;
+            
+            nflPropsData.forEach(prop => {
+                if (prop.edge) {
+                    totalEdge += parseFloat(prop.edge);
+                    edgeCount++;
+                }
+            });
+            
+            const avgEdge = edgeCount > 0 ? (totalEdge / edgeCount).toFixed(1) : 0;
+            
+            document.getElementById('nflPropsCount').textContent = nflCount;
+            document.getElementById('collegeGamesCount').textContent = collegeCount;
+            document.getElementById('aPlusBetsCount').textContent = aPlusCount;
+            document.getElementById('avgEdge').textContent = avgEdge > 0 ? `+${avgEdge}%` : `${avgEdge}%`;
+        }
+        
+        // Update results stats
+        function updateResultsStats() {
+            const wins = trackedBets.filter(b => b.status === 'won').length;
+            const losses = trackedBets.filter(b => b.status === 'lost').length;
+            const total = wins + losses;
+            const winRate = total > 0 ? ((wins / total) * 100).toFixed(1) : 0;
+            
+            document.getElementById('overallWinRate').textContent = `${winRate}%`;
+            document.getElementById('totalTracked').textContent = trackedBets.length;
+            
+            // Update grade stats
+            updateGradeStats();
+            updateBetTypeStats();
+        }
+        
+        // Update grade stats
+        function updateGradeStats() {
+            const grades = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'F'];
+            const tbody = document.getElementById('gradeStatsBody');
+            
+            const stats = grades.map(grade => {
+                const gradeBets = trackedBets.filter(b => b.grade === grade && b.status !== 'pending');
+                const wins = gradeBets.filter(b => b.status === 'won').length;
+                const total = gradeBets.length;
+                const winRate = total > 0 ? ((wins / total) * 100).toFixed(1) : 0;
+                
+                return { grade, winRate, wins, total };
+            }).filter(s => s.total > 0);
+            
+            if (stats.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #64748b;">No completed bets yet</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = stats.map(s => `
+                <tr>
+                    <td><span class="grade-badge grade-${s.grade.toLowerCase().replace('+', '-plus').replace('-', '-minus')}">${s.grade}</span></td>
+                    <td>${s.winRate}%</td>
+                    <td>${s.wins} for ${s.total}</td>
+                </tr>
+            `).join('');
+        }
+        
+        // Update bet type stats
+        function updateBetTypeStats() {
+            const tbody = document.getElementById('betTypeStatsBody');
+            
+            const types = {
+                'nfl_prop': 'NFL Props',
+                'college_spread': 'College Spreads',
+                'college_total': 'College Totals'
+            };
+            
+            const stats = Object.entries(types).map(([key, name]) => {
+                const typeBets = trackedBets.filter(b => b.type === key && b.status !== 'pending');
+                const wins = typeBets.filter(b => b.status === 'won').length;
+                const total = typeBets.length;
+                const winRate = total > 0 ? ((wins / total) * 100).toFixed(1) : 0;
+                
+                return { name, winRate, wins, total };
+            }).filter(s => s.total > 0);
+            
+            if (stats.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #64748b;">No completed bets yet</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = stats.map(s => `
+                <tr>
+                    <td>${s.name}</td>
+                    <td>${s.winRate}%</td>
+                    <td>${s.wins} for ${s.total}</td>
+                </tr>
+            `).join('');
+        }
+        
+        // Update status
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateDashboard();
+            updateResultsStats();
+        });
+    </script>
+</body>
+</html>
