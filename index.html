@@ -608,8 +608,96 @@
             margin-bottom: 20px;
         }
 
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .results-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .results-table-container {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .results-table-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .results-table th {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px 8px;
+            text-align: left;
+            font-size: 12px;
+            color: #94a3b8;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .results-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 13px;
+        }
+
+        .results-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .win-rate-high { color: #10b981; font-weight: 600; }
+        .win-rate-medium { color: #f59e0b; font-weight: 600; }
+        .win-rate-low { color: #ef4444; font-weight: 600; }
+
+        .prediction-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-locked { background: #3b82f6; color: white; }
+        .status-pending { background: #f59e0b; color: white; }
+        .status-won { background: #10b981; color: white; }
+        .status-lost { background: #ef4444; color: white; }
+
+        .locked-predictions {
+            margin-bottom: 30px;
+        }
+
+        .locked-prediction-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .prediction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .prediction-details {
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        .lock-timer {
+            font-size: 12px;
+            color: #94a3b8;
         }
 
         @media (max-width: 768px) {
@@ -657,6 +745,7 @@
                 <div class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</div>
                 <div class="nav-tab" onclick="switchTab('nfl-props')">NFL Props</div>
                 <div class="nav-tab" onclick="switchTab('college-games')">College Games</div>
+                <div class="nav-tab" onclick="switchTab('results-trends')">Results & Trends</div>
                 <div class="nav-tab" onclick="switchTab('a-plus-bets')" style="display: none;">A+ Bets</div>
                 <div class="nav-tab" onclick="switchTab('settings')">Settings</div>
             </div>
@@ -786,7 +875,70 @@
             </div>
         </div>
 
-        <!-- Settings Tab -->
+        <!-- Results & Trends Tab -->
+        <div id="results-trends" class="tab-content">
+            <div class="section-title">📊 Results & Trends Analysis</div>
+            
+            <div class="locked-predictions">
+                <h3 style="margin-bottom: 20px; color: #00d4ff;">🔒 Locked Predictions (30 min before game time)</h3>
+                <div id="locked-predictions-container">
+                    <div class="loading">No predictions locked yet. Predictions automatically lock 30 minutes before game time.</div>
+                </div>
+            </div>
+
+            <div class="results-container">
+                <div class="results-table-container">
+                    <div class="results-table-title">🎯 Winning % by Letter Grade</div>
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Grade</th>
+                                <th>Win Rate</th>
+                                <th>Record</th>
+                                <th>Total Bets</th>
+                            </tr>
+                        </thead>
+                        <tbody id="grade-results-table">
+                            <tr><td colspan="4" style="text-align: center; color: #94a3b8;">No completed predictions yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="results-table-container">
+                    <div class="results-table-title">🏆 Winning % by Bet Type (Top 20)</div>
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Win Rate</th>
+                                <th>Record</th>
+                                <th>Type</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="type-results-table">
+                            <tr><td colspan="5" style="text-align: center; color: #94a3b8;">No completed predictions yet</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="api-panel">
+                <h3 style="margin-bottom: 15px;">⚙️ Results Management</h3>
+                <div class="api-controls">
+                    <button class="btn btn-primary" onclick="checkForCompletedGames()">
+                        <span>🔍 Check Completed Games</span>
+                    </button>
+                    <button class="btn btn-primary" onclick="simulateResults()">
+                        <span>🎲 Simulate Results (Demo)</span>
+                    </button>
+                    <button class="btn back-button" onclick="clearAllData()" style="margin-left: 20px;">
+                        <span>🗑️ Clear All Data</span>
+                    </button>
+                    <span class="status-text" id="results-status">Ready to track results</span>
+                </div>
+            </div>
+        </div>
         <div id="settings" class="tab-content">
             <div class="section-title">⚙️ API Settings</div>
             <div class="api-panel">
@@ -809,6 +961,8 @@
         let nflPropsData = [];
         let collegeGamesData = [];
         let apiKey = 'faa3e120325ffd82f08ac0dbe19898e8';
+        let lockedPredictions = JSON.parse(localStorage.getItem('lockedPredictions') || '[]');
+        let completedGames = JSON.parse(localStorage.getItem('completedGames') || '[]');
 
         // AI Analysis Factors
         const AI_FACTORS = {
@@ -1639,7 +1793,332 @@
             document.getElementById('avg-edge').textContent = avgEdge > 0 ? `+${avgEdge}%` : `${avgEdge}%`;
         }
 
-        // Search functionality
+        // Prediction tracking functions
+        function lockPredictions() {
+            const now = new Date();
+            const thirtyMinutes = 30 * 60 * 1000; // 30 minutes in milliseconds
+            
+            // Check NFL props for locking
+            nflPropsData.forEach(prop => {
+                const gameTime = new Date(prop.commence_time);
+                const lockTime = new Date(gameTime.getTime() - thirtyMinutes);
+                
+                if (now >= lockTime && prop.grade && !isAlreadyLocked(prop.id)) {
+                    const lockedPrediction = {
+                        id: prop.id,
+                        type: 'nfl-prop',
+                        player: prop.player,
+                        propType: prop.prop_type,
+                        line: prop.line,
+                        recommendation: prop.recommendation,
+                        grade: prop.grade,
+                        confidence: prop.confidence,
+                        edge: prop.edge,
+                        game: prop.game,
+                        gameTime: prop.commence_time,
+                        lockedAt: now.toISOString(),
+                        status: 'locked',
+                        sport: 'NFL',
+                        betDetails: {
+                            category: 'Player Prop',
+                            position: getPlayerPosition(prop.prop_type),
+                            propCategory: prop.prop_type,
+                            homeAway: prop.game.includes('@') ? 'away' : 'home'
+                        }
+                    };
+                    lockedPredictions.push(lockedPrediction);
+                }
+            });
+            
+            // Check college games for locking
+            collegeGamesData.forEach(game => {
+                const gameTime = new Date(game.commence_time);
+                const lockTime = new Date(gameTime.getTime() - thirtyMinutes);
+                
+                if (now >= lockTime) {
+                    // Lock spread prediction
+                    if (game.spread_analysis && game.spread_analysis.grade && !isAlreadyLocked(game.id + '_spread')) {
+                        const spreadLine = game.spreads[0] ? `${game.spreads[0].name} ${game.spreads[0].point}` : 'No spread';
+                        const isUnderdog = game.spreads[0] && game.spreads[0].point > 0;
+                        const isHome = game.spreads[0] && game.spreads[0].name === game.home_team;
+                        
+                        lockedPredictions.push({
+                            id: game.id + '_spread',
+                            type: 'college-spread',
+                            game: `${game.away_team} @ ${game.home_team}`,
+                            prediction: spreadLine,
+                            grade: game.spread_analysis.grade,
+                            confidence: game.spread_analysis.confidence,
+                            edge: game.spread_analysis.edge,
+                            gameTime: game.commence_time,
+                            lockedAt: now.toISOString(),
+                            status: 'locked',
+                            sport: 'College',
+                            betDetails: {
+                                category: 'Game Spread',
+                                favoriteUnderdog: isUnderdog ? 'Underdog' : 'Favorite',
+                                homeAway: isHome ? 'Home' : 'Away'
+                            }
+                        });
+                    }
+                    
+                    // Lock total prediction
+                    if (game.total_analysis && game.total_analysis.grade && !isAlreadyLocked(game.id + '_total')) {
+                        const totalLine = game.totals[0] ? `${game.total_analysis.recommendation} ${game.totals[0].point}` : 'No total';
+                        
+                        lockedPredictions.push({
+                            id: game.id + '_total',
+                            type: 'college-total',
+                            game: `${game.away_team} @ ${game.home_team}`,
+                            prediction: totalLine,
+                            grade: game.total_analysis.grade,
+                            confidence: game.total_analysis.confidence,
+                            edge: game.total_analysis.edge,
+                            gameTime: game.commence_time,
+                            lockedAt: now.toISOString(),
+                            status: 'locked',
+                            sport: 'College',
+                            betDetails: {
+                                category: 'Game Total',
+                                overUnder: game.total_analysis.recommendation
+                            }
+                        });
+                    }
+                }
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('lockedPredictions', JSON.stringify(lockedPredictions));
+        }
+        
+        function isAlreadyLocked(predictionId) {
+            return lockedPredictions.some(pred => pred.id === predictionId);
+        }
+        
+        function getPlayerPosition(propType) {
+            if (propType.includes('Pass')) return 'QB';
+            if (propType.includes('Rush')) return 'RB/QB';
+            if (propType.includes('Receiv') || propType.includes('Recept')) return 'WR/TE';
+            return 'Unknown';
+        }
+        
+        function checkForCompletedGames() {
+            const now = new Date();
+            let completedCount = 0;
+            
+            lockedPredictions.forEach(prediction => {
+                const gameTime = new Date(prediction.gameTime);
+                const gameEndTime = new Date(gameTime.getTime() + (4 * 60 * 60 * 1000)); // Assume 4 hours for game completion
+                
+                if (now >= gameEndTime && prediction.status === 'locked') {
+                    // Simulate result for demo purposes
+                    const wonGame = Math.random() > 0.3; // 70% win rate simulation
+                    prediction.status = wonGame ? 'won' : 'lost';
+                    prediction.result = wonGame ? 'WIN' : 'LOSS';
+                    prediction.completedAt = now.toISOString();
+                    completedCount++;
+                }
+            });
+            
+            if (completedCount > 0) {
+                localStorage.setItem('lockedPredictions', JSON.stringify(lockedPredictions));
+                updateStatus(`✅ Found ${completedCount} completed games. Results updated!`);
+                renderResultsTables();
+                renderLockedPredictions();
+            } else {
+                updateStatus(`ℹ️ No new completed games found.`);
+            }
+        }
+        
+        function simulateResults() {
+            // Add some demo completed predictions for testing
+            const demoResults = [
+                {
+                    id: 'demo1', type: 'nfl-prop', player: 'Demo Player', grade: 'A+', 
+                    status: 'won', sport: 'NFL', betDetails: { category: 'Player Prop', position: 'QB', propCategory: 'Passing Yards' }
+                },
+                {
+                    id: 'demo2', type: 'college-spread', game: 'Demo Game', grade: 'A', 
+                    status: 'won', sport: 'College', betDetails: { category: 'Game Spread', favoriteUnderdog: 'Underdog', homeAway: 'Away' }
+                },
+                {
+                    id: 'demo3', type: 'nfl-prop', player: 'Demo Player 2', grade: 'B+', 
+                    status: 'lost', sport: 'NFL', betDetails: { category: 'Player Prop', position: 'RB', propCategory: 'Rushing Yards' }
+                },
+                {
+                    id: 'demo4', type: 'college-total', game: 'Demo Game 2', grade: 'A-', 
+                    status: 'won', sport: 'College', betDetails: { category: 'Game Total', overUnder: 'Over' }
+                }
+            ];
+            
+            demoResults.forEach(demo => {
+                if (!lockedPredictions.some(p => p.id === demo.id)) {
+                    lockedPredictions.push({
+                        ...demo,
+                        gameTime: new Date(Date.now() - 86400000).toISOString(),
+                        lockedAt: new Date(Date.now() - 90000000).toISOString(),
+                        completedAt: new Date(Date.now() - 82800000).toISOString()
+                    });
+                }
+            });
+            
+            localStorage.setItem('lockedPredictions', JSON.stringify(lockedPredictions));
+            updateStatus(`✅ Added demo results for testing!`);
+            renderResultsTables();
+            renderLockedPredictions();
+        }
+        
+        function renderResultsTables() {
+            renderGradeResultsTable();
+            renderTypeResultsTable();
+        }
+        
+        function renderGradeResultsTable() {
+            const gradeStats = {};
+            
+            lockedPredictions.filter(p => p.status === 'won' || p.status === 'lost').forEach(prediction => {
+                if (!gradeStats[prediction.grade]) {
+                    gradeStats[prediction.grade] = { wins: 0, total: 0 };
+                }
+                gradeStats[prediction.grade].total++;
+                if (prediction.status === 'won') {
+                    gradeStats[prediction.grade].wins++;
+                }
+            });
+            
+            const tbody = document.getElementById('grade-results-table');
+            if (Object.keys(gradeStats).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #94a3b8;">No completed predictions yet</td></tr>';
+                return;
+            }
+            
+            const gradeOrder = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'F'];
+            const sortedGrades = Object.keys(gradeStats).sort((a, b) => gradeOrder.indexOf(a) - gradeOrder.indexOf(b));
+            
+            tbody.innerHTML = sortedGrades.map(grade => {
+                const stats = gradeStats[grade];
+                const winRate = ((stats.wins / stats.total) * 100).toFixed(1);
+                const winRateClass = winRate >= 80 ? 'win-rate-high' : winRate >= 60 ? 'win-rate-medium' : 'win-rate-low';
+                
+                return `
+                    <tr>
+                        <td><span class="grade-badge grade-${grade.toLowerCase().replace(/[+-]/g, '')}">${grade}</span></td>
+                        <td class="${winRateClass}">${winRate}%</td>
+                        <td>${stats.wins}-${stats.total - stats.wins}</td>
+                        <td>${stats.total}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function renderTypeResultsTable() {
+            const typeStats = {};
+            
+            lockedPredictions.filter(p => p.status === 'won' || p.status === 'lost').forEach(prediction => {
+                const key = createBetTypeKey(prediction);
+                if (!typeStats[key]) {
+                    typeStats[key] = { 
+                        wins: 0, total: 0, 
+                        sport: prediction.sport,
+                        details: prediction.betDetails,
+                        description: createBetDescription(prediction)
+                    };
+                }
+                typeStats[key].total++;
+                if (prediction.status === 'won') {
+                    typeStats[key].wins++;
+                }
+            });
+            
+            const tbody = document.getElementById('type-results-table');
+            if (Object.keys(typeStats).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #94a3b8;">No completed predictions yet</td></tr>';
+                return;
+            }
+            
+            const sortedTypes = Object.entries(typeStats)
+                .map(([key, stats]) => ({ key, ...stats, winRate: (stats.wins / stats.total) * 100 }))
+                .sort((a, b) => b.winRate - a.winRate)
+                .slice(0, 20);
+            
+            tbody.innerHTML = sortedTypes.map((type, index) => {
+                const winRateClass = type.winRate >= 80 ? 'win-rate-high' : type.winRate >= 60 ? 'win-rate-medium' : 'win-rate-low';
+                
+                return `
+                    <tr>
+                        <td>#${index + 1}</td>
+                        <td class="${winRateClass}">${type.winRate.toFixed(1)}%</td>
+                        <td>${type.wins}/${type.total}</td>
+                        <td>${type.sport}</td>
+                        <td style="font-size: 11px;">${type.description}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function createBetTypeKey(prediction) {
+            const details = prediction.betDetails;
+            return `${prediction.sport}_${details.category}_${Object.values(details).join('_')}`;
+        }
+        
+        function createBetDescription(prediction) {
+            const d = prediction.betDetails;
+            if (d.category === 'Player Prop') {
+                return `${d.propCategory}, ${d.position}, ${d.homeAway}`;
+            } else if (d.category === 'Game Spread') {
+                return `Spread, ${d.favoriteUnderdog}, ${d.homeAway}`;
+            } else if (d.category === 'Game Total') {
+                return `Total, ${d.overUnder}`;
+            }
+            return 'Unknown';
+        }
+        
+        function renderLockedPredictions() {
+            const container = document.getElementById('locked-predictions-container');
+            const activeLocked = lockedPredictions.filter(p => p.status === 'locked').slice(0, 10);
+            
+            if (activeLocked.length === 0) {
+                container.innerHTML = '<div class="loading">No predictions locked yet. Predictions automatically lock 30 minutes before game time.</div>';
+                return;
+            }
+            
+            container.innerHTML = activeLocked.map(prediction => {
+                const gameTime = new Date(prediction.gameTime);
+                const timeUntilGame = Math.max(0, gameTime.getTime() - Date.now());
+                const hoursUntilGame = Math.floor(timeUntilGame / (1000 * 60 * 60));
+                const minutesUntilGame = Math.floor((timeUntilGame % (1000 * 60 * 60)) / (1000 * 60));
+                
+                return `
+                    <div class="locked-prediction-card">
+                        <div class="prediction-header">
+                            <div>
+                                <span class="grade-badge grade-${prediction.grade.toLowerCase().replace(/[+-]/g, '')}">${prediction.grade}</span>
+                                <strong>${prediction.player || prediction.game}</strong>
+                            </div>
+                            <div class="prediction-status status-locked">LOCKED</div>
+                        </div>
+                        <div class="prediction-details">
+                            ${prediction.prediction || `${prediction.propType}: ${prediction.recommendation} ${prediction.line}`}
+                        </div>
+                        <div class="lock-timer">
+                            Game in ${hoursUntilGame}h ${minutesUntilGame}m • Locked ${new Date(prediction.lockedAt).toLocaleString()}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all prediction data? This cannot be undone.')) {
+                lockedPredictions = [];
+                completedGames = [];
+                localStorage.removeItem('lockedPredictions');
+                localStorage.removeItem('completedGames');
+                updateStatus('✅ All prediction data cleared');
+                renderResultsTables();
+                renderLockedPredictions();
+            }
+        }
         function performSearch() {
             const query = document.getElementById('global-search').value.toLowerCase().trim();
             const resultsContainer = document.getElementById('search-results');
