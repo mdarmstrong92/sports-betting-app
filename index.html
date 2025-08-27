@@ -34,12 +34,26 @@
         }
 
         .logo {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .logo-main {
             font-size: 32px;
             font-weight: 800;
             background: linear-gradient(45deg, #00d4ff, #5b63d3, #ff006e);
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: 4px;
+        }
+
+        .logo-sub {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 400;
+            font-style: italic;
         }
 
         .nav-tabs {
@@ -520,6 +534,73 @@
             margin-top: 8px;
         }
 
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 45px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            pointer-events: none;
+        }
+
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            margin-top: 8px;
+        }
+
+        .search-result-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: background 0.2s ease;
+        }
+
+        .search-result-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-title {
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
         .back-button {
             background: rgba(255, 255, 255, 0.1);
             color: #e2e8f0;
@@ -563,7 +644,15 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">🧠 SportsBet Pro AI</div>
+            <div class="logo">
+                <div class="logo-main">🤖 Human Robot Football Locks</div>
+                <div class="logo-sub">presented by Matty Shmealington Industries</div>
+            </div>
+            <div class="search-container">
+                <input type="text" class="search-input" id="global-search" placeholder="Search teams, games, players..." oninput="performSearch()" onfocus="showSearchResults()" onblur="hideSearchResults()">
+                <div class="search-icon">🔍</div>
+                <div class="search-results" id="search-results"></div>
+            </div>
             <div class="nav-tabs">
                 <div class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</div>
                 <div class="nav-tab" onclick="switchTab('nfl-props')">NFL Props</div>
@@ -719,7 +808,7 @@
         // Global variables
         let nflPropsData = [];
         let collegeGamesData = [];
-        let apiKey = '';
+        let apiKey = 'faa3e120325ffd82f08ac0dbe19898e8';
 
         // AI Analysis Factors
         const AI_FACTORS = {
@@ -1550,7 +1639,109 @@
             document.getElementById('avg-edge').textContent = avgEdge > 0 ? `+${avgEdge}%` : `${avgEdge}%`;
         }
 
-        // Initialize app
+        // Search functionality
+        function performSearch() {
+            const query = document.getElementById('global-search').value.toLowerCase().trim();
+            const resultsContainer = document.getElementById('search-results');
+            
+            if (query.length < 2) {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+            
+            const results = [];
+            
+            // Search NFL props
+            nflPropsData.forEach(prop => {
+                if (prop.player.toLowerCase().includes(query) || 
+                    prop.game.toLowerCase().includes(query) ||
+                    prop.prop_type.toLowerCase().includes(query)) {
+                    results.push({
+                        title: prop.player,
+                        subtitle: `${prop.prop_type} - ${prop.game}`,
+                        type: 'nfl-prop',
+                        data: prop
+                    });
+                }
+            });
+            
+            // Search college games
+            collegeGamesData.forEach(game => {
+                if (game.home_team.toLowerCase().includes(query) || 
+                    game.away_team.toLowerCase().includes(query)) {
+                    results.push({
+                        title: `${game.away_team} @ ${game.home_team}`,
+                        subtitle: `College Football - ${new Date(game.commence_time).toLocaleDateString()}`,
+                        type: 'college-game',
+                        data: game
+                    });
+                }
+            });
+            
+            // Display results
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<div class="search-result-item"><div class="search-result-title">No results found</div><div class="search-result-subtitle">Try searching for team names or player names</div></div>';
+            } else {
+                resultsContainer.innerHTML = results.slice(0, 8).map(result => 
+                    `<div class="search-result-item" onmousedown="selectSearchResult('${result.type}', '${result.data.id}')">
+                        <div class="search-result-title">${result.title}</div>
+                        <div class="search-result-subtitle">${result.subtitle}</div>
+                    </div>`
+                ).join('');
+            }
+            
+            resultsContainer.style.display = 'block';
+        }
+        
+        function showSearchResults() {
+            const query = document.getElementById('global-search').value;
+            if (query.length >= 2) {
+                document.getElementById('search-results').style.display = 'block';
+            }
+        }
+        
+        function hideSearchResults() {
+            setTimeout(() => {
+                document.getElementById('search-results').style.display = 'none';
+            }, 200);
+        }
+        
+        function selectSearchResult(type, id) {
+            if (type === 'nfl-prop') {
+                switchTab('nfl-props');
+                // Scroll to the specific prop
+                setTimeout(() => {
+                    const propElements = document.querySelectorAll('#nfl-props-container .prop-card');
+                    propElements.forEach(card => {
+                        if (card.innerHTML.includes(id)) {
+                            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            card.style.border = '2px solid #00d4ff';
+                            setTimeout(() => {
+                                card.style.border = '1px solid rgba(255, 255, 255, 0.12)';
+                            }, 3000);
+                        }
+                    });
+                }, 100);
+            } else if (type === 'college-game') {
+                switchTab('college-games');
+                // Scroll to the specific game
+                setTimeout(() => {
+                    const gameElements = document.querySelectorAll('#college-games-container .game-card');
+                    gameElements.forEach(card => {
+                        if (card.innerHTML.includes(id)) {
+                            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            card.style.border = '2px solid #00d4ff';
+                            setTimeout(() => {
+                                card.style.border = '1px solid rgba(255, 255, 255, 0.12)';
+                            }, 3000);
+                        }
+                    });
+                }, 100);
+            }
+            
+            document.getElementById('global-search').value = '';
+            document.getElementById('search-results').style.display = 'none';
+        }
         document.addEventListener('DOMContentLoaded', function() {
             loadSettings();
             initializeDateFilters();
