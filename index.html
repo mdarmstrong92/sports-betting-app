@@ -184,6 +184,16 @@
             padding: 24px;
             text-align: center;
         }
+        
+        .stat-card.clickable {
+            cursor: pointer;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+        
+        .stat-card.clickable:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateY(-4px);
+        }
 
         .stat-value {
             font-size: 36px;
@@ -206,6 +216,62 @@
 
         .tab-content.active {
             display: block;
+        }
+        
+        .filters-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .grade-filters {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .grade-filter-btn {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #94a3b8;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+        
+        .grade-filter-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #00d4ff);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .sort-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .sort-select {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .sort-select option {
+            background: #1a1a2e;
         }
 
         .bets-container {
@@ -448,7 +514,7 @@
                     <div class="stat-value" id="collegeGamesCount">0</div>
                     <div class="stat-label">College Games</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card clickable" onclick="showAPlusBets()">
                     <div class="stat-value" id="aPlusBetsCount">0</div>
                     <div class="stat-label">A+ Grade Bets (Click to View)</div>
                 </div>
@@ -469,6 +535,23 @@
         <!-- NFL Props Tab -->
         <div id="nfl-props" class="tab-content">
             <h2 style="margin-bottom: 20px;">NFL Player Props</h2>
+            
+            <div class="filters-panel">
+                <div class="grade-filters">
+                    <span style="color: #94a3b8; font-size: 14px; margin-right: 12px;">Filter by Grade:</span>
+                    <button class="grade-filter-btn active" onclick="setNFLFilter('high')" id="nfl-filter-high">A+ to B-</button>
+                    <button class="grade-filter-btn" onclick="setNFLFilter('all')" id="nfl-filter-all">All Grades</button>
+                    <button class="grade-filter-btn" onclick="setNFLFilter('a-only')" id="nfl-filter-a">A Grades Only</button>
+                </div>
+                <div class="sort-controls">
+                    <span style="color: #94a3b8; font-size: 14px;">Sort by:</span>
+                    <select class="sort-select" id="nfl-sort" onchange="sortNFLProps()">
+                        <option value="grade">Best Grade First</option>
+                        <option value="time">Starting Soonest</option>
+                    </select>
+                </div>
+            </div>
+            
             <div class="bets-container" id="nflPropsContainer">
                 <div class="loading">
                     <div class="spinner"></div>
@@ -480,11 +563,41 @@
         <!-- College Bets Tab -->
         <div id="college" class="tab-content">
             <h2 style="margin-bottom: 20px;">College Football Bets</h2>
+            
+            <div class="filters-panel">
+                <div class="grade-filters">
+                    <span style="color: #94a3b8; font-size: 14px; margin-right: 12px;">Filter by Grade:</span>
+                    <button class="grade-filter-btn active" onclick="setCollegeFilter('high')" id="college-filter-high">A+ to B-</button>
+                    <button class="grade-filter-btn" onclick="setCollegeFilter('all')" id="college-filter-all">All Grades</button>
+                    <button class="grade-filter-btn" onclick="setCollegeFilter('a-only')" id="college-filter-a">A Grades Only</button>
+                </div>
+                <div class="sort-controls">
+                    <span style="color: #94a3b8; font-size: 14px;">Sort by:</span>
+                    <select class="sort-select" id="college-sort" onchange="sortCollegeBets()">
+                        <option value="grade">Best Grade First</option>
+                        <option value="time">Starting Soonest</option>
+                    </select>
+                </div>
+            </div>
+            
             <div class="bets-container" id="collegeContainer">
                 <div class="loading">
                     <div class="spinner"></div>
                     <div>Loading college football lines...</div>
                 </div>
+            </div>
+        </div>
+        
+        <!-- A+ Bets Tab (Hidden by default) -->
+        <div id="a-plus-bets" class="tab-content">
+            <div style="margin-bottom: 20px;">
+                <button class="btn" onclick="switchTab('dashboard')" style="background: rgba(255, 255, 255, 0.1); margin-bottom: 20px;">
+                    ← Back to Dashboard
+                </button>
+                <h2 style="color: #10b981;">🏆 A+ Grade Bets Only</h2>
+            </div>
+            <div class="bets-container" id="aPlusBetsContainer">
+                <div class="loading">No A+ bets available. Run AI Analysis first.</div>
             </div>
         </div>
         
@@ -568,6 +681,20 @@
         let trackedBets = JSON.parse(localStorage.getItem('trackedBets')) || [];
         const API_KEY = '515fda69abaa6088d32dcfbc0b00d2e9';
         
+        // Filter states
+        let nflFilterMode = 'high'; // 'high' = A+ to B-, 'all' = all grades, 'a-only' = A grades only
+        let collegeFilterMode = 'high';
+        let nflSortMode = 'grade'; // 'grade' or 'time'
+        let collegeSortMode = 'grade';
+        
+        // Grade rankings for filtering and sorting
+        const gradeRanks = {
+            'A+': 13, 'A': 12, 'A-': 11,
+            'B+': 10, 'B': 9, 'B-': 8,
+            'C+': 7, 'C': 6, 'C-': 5,
+            'D': 4, 'F': 3
+        };
+        
         // Tab switching
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {
@@ -578,11 +705,136 @@
             });
             
             document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+            
+            // Find and activate the correct nav tab
+            if (tabName !== 'a-plus-bets') {
+                const navTabs = document.querySelectorAll('.nav-tab');
+                navTabs.forEach(tab => {
+                    if (tab.textContent.toLowerCase().includes(tabName.replace('-', ' ').split(' ')[0])) {
+                        tab.classList.add('active');
+                    }
+                });
+            }
             
             if (tabName === 'results') {
                 updateResultsStats();
             }
+        }
+        
+        // Show A+ Bets
+        function showAPlusBets() {
+            switchTab('a-plus-bets');
+            renderAPlusBets();
+        }
+        
+        // Render A+ Bets
+        function renderAPlusBets() {
+            const container = document.getElementById('aPlusBetsContainer');
+            const allAPlusBets = [];
+            
+            // Collect all A+ NFL props
+            nflPropsData.forEach(prop => {
+                if (prop.grade === 'A+') {
+                    allAPlusBets.push({
+                        type: 'nfl',
+                        data: prop
+                    });
+                }
+            });
+            
+            // Collect all A+ college bets
+            collegeData.forEach(game => {
+                if (game.spreadAnalysis) {
+                    game.spreadAnalysis.forEach((spread, index) => {
+                        if (spread.grade === 'A+') {
+                            allAPlusBets.push({
+                                type: 'college-spread',
+                                data: { ...game, spread, index }
+                            });
+                        }
+                    });
+                }
+                if (game.totalAnalysis) {
+                    game.totalAnalysis.forEach((total, index) => {
+                        if (total.grade === 'A+') {
+                            allAPlusBets.push({
+                                type: 'college-total',
+                                data: { ...game, total, index }
+                            });
+                        }
+                    });
+                }
+            });
+            
+            if (allAPlusBets.length === 0) {
+                container.innerHTML = '<div class="loading">No A+ bets found. Run AI Analysis to find premium opportunities.</div>';
+                return;
+            }
+            
+            const cards = allAPlusBets.map(bet => {
+                if (bet.type === 'nfl') {
+                    return createNFLPropCard(bet.data);
+                } else if (bet.type === 'college-spread') {
+                    return createCollegeSpreadCard(bet.data.awayTeam, bet.data.homeTeam, bet.data.gameTime, 
+                                                   bet.data.spread, bet.data.id, bet.data.index);
+                } else {
+                    return createCollegeTotalCard(bet.data.awayTeam, bet.data.homeTeam, bet.data.gameTime, 
+                                                  bet.data.total, bet.data.id, bet.data.index);
+                }
+            });
+            
+            container.innerHTML = cards.join('');
+        }
+        
+        // NFL Filter functions
+        function setNFLFilter(mode) {
+            nflFilterMode = mode;
+            
+            // Update button states
+            document.getElementById('nfl-filter-high').classList.remove('active');
+            document.getElementById('nfl-filter-all').classList.remove('active');
+            document.getElementById('nfl-filter-a').classList.remove('active');
+            
+            document.getElementById(`nfl-filter-${mode === 'a-only' ? 'a' : mode}`).classList.add('active');
+            
+            renderNFLProps();
+        }
+        
+        function sortNFLProps() {
+            nflSortMode = document.getElementById('nfl-sort').value;
+            renderNFLProps();
+        }
+        
+        // College Filter functions
+        function setCollegeFilter(mode) {
+            collegeFilterMode = mode;
+            
+            // Update button states
+            document.getElementById('college-filter-high').classList.remove('active');
+            document.getElementById('college-filter-all').classList.remove('active');
+            document.getElementById('college-filter-a').classList.remove('active');
+            
+            document.getElementById(`college-filter-${mode === 'a-only' ? 'a' : mode}`).classList.add('active');
+            
+            renderCollegeGames();
+        }
+        
+        function sortCollegeBets() {
+            collegeSortMode = document.getElementById('college-sort').value;
+            renderCollegeGames();
+        }
+        
+        // Filter function to check if grade should be displayed
+        function shouldShowGrade(grade, filterMode) {
+            if (!grade) return filterMode === 'all';
+            
+            if (filterMode === 'all') return true;
+            if (filterMode === 'a-only') return grade.startsWith('A');
+            if (filterMode === 'high') {
+                const rank = gradeRanks[grade] || 0;
+                return rank >= gradeRanks['B-']; // B- or better
+            }
+            return false;
         }
         
         // Fetch all data
@@ -863,7 +1115,130 @@
             };
         }
         
-        // Render NFL Props
+        // Create NFL Prop Card
+        function createNFLPropCard(prop) {
+            const gradeClass = prop.grade ? `grade-${prop.grade.toLowerCase().replace('+', '-plus').replace('-', '-minus')}` : '';
+            const gameTime = new Date(prop.gameTime).toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+            
+            // Calculate lock time (30 minutes before game)
+            const lockTime = new Date(prop.gameTime);
+            lockTime.setMinutes(lockTime.getMinutes() - 30);
+            const timeToLock = lockTime - new Date();
+            const hoursToLock = Math.floor(timeToLock / (1000 * 60 * 60));
+            const minutesToLock = Math.floor((timeToLock % (1000 * 60 * 60)) / (1000 * 60));
+            
+            return `
+                <div class="bet-card">
+                    <div class="bet-header">
+                        <div class="bet-title">${prop.player}</div>
+                        ${prop.grade ? `<div class="grade-badge ${gradeClass}">${prop.grade}</div>` : ''}
+                    </div>
+                    <div class="bet-details">
+                        <div>${prop.propType}</div>
+                        <div class="bet-line">${prop.line}</div>
+                        <div class="bet-odds">Odds: ${prop.odds > 0 ? '+' : ''}${prop.odds}</div>
+                        <div style="margin-top: 8px; font-size: 13px; color: #94a3b8;">${prop.game}</div>
+                        <div style="font-size: 12px; color: #64748b;">${gameTime}</div>
+                    </div>
+                    ${prop.confidence ? `
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${prop.confidence}%"></div>
+                        </div>
+                        <div class="confidence-text">
+                            <span>Confidence: ${prop.confidence}%</span>
+                            <span>Pick: ${prop.pick}</span>
+                        </div>
+                        <div class="lock-time">🔒 Locks in ${hoursToLock}h ${minutesToLock}m</div>
+                        <button class="add-to-tracker" onclick="addToTracker('${prop.id}', 'nfl_prop')">
+                            Add to Tracker
+                        </button>
+                    ` : '<div style="text-align: center; margin-top: 20px; color: #64748b;">Run AI Analysis for prediction</div>'}
+                </div>
+            `;
+        }
+        
+        // Create College Spread Card
+        function createCollegeSpreadCard(awayTeam, homeTeam, gameTime, spread, gameId, index) {
+            const gradeClass = spread.grade ? `grade-${spread.grade.toLowerCase().replace('+', '-plus').replace('-', '-minus')}` : '';
+            const formattedTime = new Date(gameTime).toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+            
+            return `
+                <div class="bet-card">
+                    <div class="bet-header">
+                        <div class="bet-title">${awayTeam} @ ${homeTeam}</div>
+                        ${spread.grade ? `<div class="grade-badge ${gradeClass}">${spread.grade}</div>` : ''}
+                    </div>
+                    <div class="bet-details">
+                        <div>Point Spread</div>
+                        <div class="bet-line">${spread.team} ${spread.line > 0 ? '+' : ''}${spread.line}</div>
+                        <div class="bet-odds">Odds: ${spread.odds}</div>
+                        <div style="margin-top: 8px; font-size: 12px; color: #64748b;">${formattedTime}</div>
+                    </div>
+                    ${spread.confidence ? `
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${spread.confidence}%"></div>
+                        </div>
+                        <div class="confidence-text">
+                            <span>Confidence: ${spread.confidence}%</span>
+                            <span>Edge: ${spread.edge}%</span>
+                        </div>
+                        <button class="add-to-tracker" onclick="addToTracker('${gameId}_spread_${index}', 'college_spread')">
+                            Add to Tracker
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+        }
+        
+        // Create College Total Card
+        function createCollegeTotalCard(awayTeam, homeTeam, gameTime, total, gameId, index) {
+            const gradeClass = total.grade ? `grade-${total.grade.toLowerCase().replace('+', '-plus').replace('-', '-minus')}` : '';
+            const formattedTime = new Date(gameTime).toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit'
+            });
+            
+            return `
+                <div class="bet-card">
+                    <div class="bet-header">
+                        <div class="bet-title">${awayTeam} @ ${homeTeam}</div>
+                        ${total.grade ? `<div class="grade-badge ${gradeClass}">${total.grade}</div>` : ''}
+                    </div>
+                    <div class="bet-details">
+                        <div>Game Total</div>
+                        <div class="bet-line">O/U ${total.line}</div>
+                        <div class="bet-odds">Over: ${total.overOdds} | Under: ${total.underOdds}</div>
+                        <div style="margin-top: 8px; font-size: 12px; color: #64748b;">${formattedTime}</div>
+                    </div>
+                    ${total.confidence ? `
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: ${total.confidence}%"></div>
+                        </div>
+                        <div class="confidence-text">
+                            <span>Confidence: ${total.confidence}%</span>
+                            <span>Pick: ${total.pick}</span>
+                        </div>
+                        <button class="add-to-tracker" onclick="addToTracker('${gameId}_total_${index}', 'college_total')">
+                            Add to Tracker
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+        }
+        
+        // Render NFL Props with filtering and sorting
         function renderNFLProps() {
             const container = document.getElementById('nflPropsContainer');
             
@@ -872,54 +1247,33 @@
                 return;
             }
             
-            container.innerHTML = nflPropsData.map(prop => {
-                const gradeClass = prop.grade ? `grade-${prop.grade.toLowerCase().replace('+', '-plus').replace('-', '-minus')}` : '';
-                const gameTime = new Date(prop.gameTime).toLocaleString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit'
+            // Filter props based on grade
+            let filteredProps = nflPropsData.filter(prop => 
+                shouldShowGrade(prop.grade, nflFilterMode)
+            );
+            
+            // Sort props
+            if (nflSortMode === 'grade') {
+                filteredProps.sort((a, b) => {
+                    const aRank = gradeRanks[a.grade] || 0;
+                    const bRank = gradeRanks[b.grade] || 0;
+                    return bRank - aRank;
                 });
-                
-                // Calculate lock time (30 minutes before game)
-                const lockTime = new Date(prop.gameTime);
-                lockTime.setMinutes(lockTime.getMinutes() - 30);
-                const timeToLock = lockTime - new Date();
-                const hoursToLock = Math.floor(timeToLock / (1000 * 60 * 60));
-                const minutesToLock = Math.floor((timeToLock % (1000 * 60 * 60)) / (1000 * 60));
-                
-                return `
-                    <div class="bet-card">
-                        <div class="bet-header">
-                            <div class="bet-title">${prop.player}</div>
-                            ${prop.grade ? `<div class="grade-badge ${gradeClass}">${prop.grade}</div>` : ''}
-                        </div>
-                        <div class="bet-details">
-                            <div>${prop.propType}</div>
-                            <div class="bet-line">${prop.line}</div>
-                            <div class="bet-odds">Odds: ${prop.odds > 0 ? '+' : ''}${prop.odds}</div>
-                            <div style="margin-top: 8px; font-size: 13px; color: #94a3b8;">${prop.game}</div>
-                            <div style="font-size: 12px; color: #64748b;">${gameTime}</div>
-                        </div>
-                        ${prop.confidence ? `
-                            <div class="confidence-bar">
-                                <div class="confidence-fill" style="width: ${prop.confidence}%"></div>
-                            </div>
-                            <div class="confidence-text">
-                                <span>Confidence: ${prop.confidence}%</span>
-                                <span>Pick: ${prop.pick}</span>
-                            </div>
-                            <div class="lock-time">🔒 Locks in ${hoursToLock}h ${minutesToLock}m</div>
-                            <button class="add-to-tracker" onclick="addToTracker('${prop.id}', 'nfl_prop')">
-                                Add to Tracker
-                            </button>
-                        ` : '<div style="text-align: center; margin-top: 20px; color: #64748b;">Run AI Analysis for prediction</div>'}
-                    </div>
-                `;
-            }).join('');
+            } else if (nflSortMode === 'time') {
+                filteredProps.sort((a, b) => 
+                    new Date(a.gameTime) - new Date(b.gameTime)
+                );
+            }
+            
+            if (filteredProps.length === 0) {
+                container.innerHTML = '<div class="loading">No props match your filter criteria.</div>';
+                return;
+            }
+            
+            container.innerHTML = filteredProps.map(prop => createNFLPropCard(prop)).join('');
         }
         
-        // Render College Games
+        // Render College Games with filtering and sorting
         function renderCollegeGames() {
             const container = document.getElementById('collegeContainer');
             
@@ -928,86 +1282,59 @@
                 return;
             }
             
-            const cards = [];
+            const allBets = [];
             
             collegeData.forEach(game => {
-                const gameTime = new Date(game.gameTime).toLocaleString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit'
-                });
-                
-                // Spread bets
+                // Add spread bets
                 if (game.spreadAnalysis) {
                     game.spreadAnalysis.forEach((spread, index) => {
-                        const gradeClass = spread.grade ? `grade-${spread.grade.toLowerCase().replace('+', '-plus').replace('-', '-minus')}` : '';
-                        
-                        cards.push(`
-                            <div class="bet-card">
-                                <div class="bet-header">
-                                    <div class="bet-title">${game.awayTeam} @ ${game.homeTeam}</div>
-                                    ${spread.grade ? `<div class="grade-badge ${gradeClass}">${spread.grade}</div>` : ''}
-                                </div>
-                                <div class="bet-details">
-                                    <div>Point Spread</div>
-                                    <div class="bet-line">${spread.team} ${spread.line > 0 ? '+' : ''}${spread.line}</div>
-                                    <div class="bet-odds">Odds: ${spread.odds}</div>
-                                    <div style="margin-top: 8px; font-size: 12px; color: #64748b;">${gameTime}</div>
-                                </div>
-                                ${spread.confidence ? `
-                                    <div class="confidence-bar">
-                                        <div class="confidence-fill" style="width: ${spread.confidence}%"></div>
-                                    </div>
-                                    <div class="confidence-text">
-                                        <span>Confidence: ${spread.confidence}%</span>
-                                        <span>Edge: ${spread.edge}%</span>
-                                    </div>
-                                    <button class="add-to-tracker" onclick="addToTracker('${game.id}_spread_${index}', 'college_spread')">
-                                        Add to Tracker
-                                    </button>
-                                ` : ''}
-                            </div>
-                        `);
+                        if (shouldShowGrade(spread.grade, collegeFilterMode)) {
+                            allBets.push({
+                                type: 'spread',
+                                gameTime: game.gameTime,
+                                grade: spread.grade,
+                                html: createCollegeSpreadCard(game.awayTeam, game.homeTeam, 
+                                                             game.gameTime, spread, game.id, index)
+                            });
+                        }
                     });
                 }
                 
-                // Total bets
+                // Add total bets
                 if (game.totalAnalysis) {
                     game.totalAnalysis.forEach((total, index) => {
-                        const gradeClass = total.grade ? `grade-${total.grade.toLowerCase().replace('+', '-plus').replace('-', '-minus')}` : '';
-                        
-                        cards.push(`
-                            <div class="bet-card">
-                                <div class="bet-header">
-                                    <div class="bet-title">${game.awayTeam} @ ${game.homeTeam}</div>
-                                    ${total.grade ? `<div class="grade-badge ${gradeClass}">${total.grade}</div>` : ''}
-                                </div>
-                                <div class="bet-details">
-                                    <div>Game Total</div>
-                                    <div class="bet-line">O/U ${total.line}</div>
-                                    <div class="bet-odds">Over: ${total.overOdds} | Under: ${total.underOdds}</div>
-                                    <div style="margin-top: 8px; font-size: 12px; color: #64748b;">${gameTime}</div>
-                                </div>
-                                ${total.confidence ? `
-                                    <div class="confidence-bar">
-                                        <div class="confidence-fill" style="width: ${total.confidence}%"></div>
-                                    </div>
-                                    <div class="confidence-text">
-                                        <span>Confidence: ${total.confidence}%</span>
-                                        <span>Pick: ${total.pick}</span>
-                                    </div>
-                                    <button class="add-to-tracker" onclick="addToTracker('${game.id}_total_${index}', 'college_total')">
-                                        Add to Tracker
-                                    </button>
-                                ` : ''}
-                            </div>
-                        `);
+                        if (shouldShowGrade(total.grade, collegeFilterMode)) {
+                            allBets.push({
+                                type: 'total',
+                                gameTime: game.gameTime,
+                                grade: total.grade,
+                                html: createCollegeTotalCard(game.awayTeam, game.homeTeam, 
+                                                            game.gameTime, total, game.id, index)
+                            });
+                        }
                     });
                 }
             });
             
-            container.innerHTML = cards.join('');
+            // Sort bets
+            if (collegeSortMode === 'grade') {
+                allBets.sort((a, b) => {
+                    const aRank = gradeRanks[a.grade] || 0;
+                    const bRank = gradeRanks[b.grade] || 0;
+                    return bRank - aRank;
+                });
+            } else if (collegeSortMode === 'time') {
+                allBets.sort((a, b) => 
+                    new Date(a.gameTime) - new Date(b.gameTime)
+                );
+            }
+            
+            if (allBets.length === 0) {
+                container.innerHTML = '<div class="loading">No bets match your filter criteria.</div>';
+                return;
+            }
+            
+            container.innerHTML = allBets.map(bet => bet.html).join('');
         }
         
         // Add bet to tracker
