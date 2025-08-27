@@ -1069,8 +1069,47 @@
         
         // Generate AI analysis for a bet
         function generateAIAnalysis(type, data) {
-            // Simulate AI confidence calculation
-            const baseConfidence = 50 + Math.random() * 50;
+            // More realistic confidence distribution
+            // Most bets should be C/D range, very few should be A+
+            const rand = Math.random();
+            let baseConfidence;
+            
+            // Create a bell curve distribution centered around 60-65%
+            if (rand < 0.02) {
+                // 2% chance of A+ (95-100)
+                baseConfidence = 95 + Math.random() * 5;
+            } else if (rand < 0.05) {
+                // 3% chance of A (90-94)
+                baseConfidence = 90 + Math.random() * 4;
+            } else if (rand < 0.10) {
+                // 5% chance of A- (85-89)
+                baseConfidence = 85 + Math.random() * 4;
+            } else if (rand < 0.18) {
+                // 8% chance of B+ (80-84)
+                baseConfidence = 80 + Math.random() * 4;
+            } else if (rand < 0.28) {
+                // 10% chance of B (75-79)
+                baseConfidence = 75 + Math.random() * 4;
+            } else if (rand < 0.40) {
+                // 12% chance of B- (70-74)
+                baseConfidence = 70 + Math.random() * 4;
+            } else if (rand < 0.55) {
+                // 15% chance of C+ (65-69)
+                baseConfidence = 65 + Math.random() * 4;
+            } else if (rand < 0.70) {
+                // 15% chance of C (60-64)
+                baseConfidence = 60 + Math.random() * 4;
+            } else if (rand < 0.85) {
+                // 15% chance of C- (55-59)
+                baseConfidence = 55 + Math.random() * 4;
+            } else if (rand < 0.95) {
+                // 10% chance of D (50-54)
+                baseConfidence = 50 + Math.random() * 4;
+            } else {
+                // 5% chance of F (below 50)
+                baseConfidence = 40 + Math.random() * 9;
+            }
+            
             const factors = [];
             
             // Add analysis factors based on type
@@ -1106,12 +1145,26 @@
             const picks = ['Over', 'Under', 'Favorite', 'Underdog'];
             const pick = picks[Math.floor(Math.random() * 2)];
             
+            // More realistic edge calculation - most should be small
+            const edgeRand = Math.random();
+            let edge;
+            if (edgeRand < 0.7) {
+                // 70% have small edge (-2 to +3)
+                edge = (Math.random() * 5 - 2).toFixed(1);
+            } else if (edgeRand < 0.95) {
+                // 25% have moderate edge (3 to 7)
+                edge = (3 + Math.random() * 4).toFixed(1);
+            } else {
+                // 5% have high edge (7 to 10)
+                edge = (7 + Math.random() * 3).toFixed(1);
+            }
+            
             return {
                 confidence: Math.round(baseConfidence),
                 grade: grade,
                 pick: pick,
                 factors: factors,
-                edge: (Math.random() * 10 - 2).toFixed(1)
+                edge: edge
             };
         }
         
